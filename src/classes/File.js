@@ -5,7 +5,7 @@ import mkdirp from 'mkdirp';
 import { basename, dirname, extname } from 'path';
 import { EOL } from 'os';
 import isBinaryFile from 'isbinaryfile';
-import { replacePatterns } from 'battle-casex';
+import { replacePatterns, joinLines } from 'battle-casex';
 
 import glob from '../helpers/glob';
 import log from '../helpers/log';
@@ -16,6 +16,15 @@ export default class File {
 
   constructor(path: string, name?: string) {
     this.path = replacePatterns(path, name);
+  }
+
+  existing(path: string, name?: string): File {
+    if (path.endsWith('/')) path += this.filename;
+
+    const file = new File(path, name);
+    if (!file.exists) file.text = this.text;
+
+    return file;
   }
 
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
@@ -39,6 +48,11 @@ export default class File {
 
   get exists(): boolean {
     return fs.existsSync(this.path);
+  }
+
+  get name(): string {
+    const ext = this.extension;
+    return this.filename.substring(0, this.filename.length - ext.length);
   }
 
   get filename(): string {
@@ -94,7 +108,7 @@ export default class File {
    */
 
   static joinLines(lines: string[]): string {
-    return lines.join(EOL);
+    return joinLines(lines);
   }
 
   readText() {
