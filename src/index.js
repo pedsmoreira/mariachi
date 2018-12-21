@@ -9,10 +9,24 @@ import Battlecry from './classes/Battlecry';
 
 import dd from './helpers/dd';
 import log from './helpers/log';
+import spaces from './helpers/spaces';
+import memoize from './helpers/memoize';
 
 import { EOL } from 'os';
-import { configure } from 'battle-casex';
+import { replacePatterns, configure } from 'battle-casex';
 
 configure({ eol: EOL });
 
-export { ArgBuilder, File, Generator, GeneratorMethod, OptionBuilder, Battlecry, dd, log };
+export {
+  ArgBuilder,
+  File,
+  Generator,
+  GeneratorMethod,
+  OptionBuilder,
+  Battlecry,
+  dd,
+  log,
+  spaces,
+  memoize,
+  replacePatterns
+};
