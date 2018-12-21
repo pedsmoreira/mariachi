@@ -1,3 +1,7 @@
+# 1.0.0
+
+* Extract namedCasex into battle-casex package
+
 # 0.3.4
 
 * Use EOL instead of \r\n - [PR by @Jimmerz28](https://github.com/pedsmoreira/battlecry/pull/12)

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://battlecry.pedrosm.com">
+  <a href="https://battlecry.js.org/">
     <img src="./docs/assets/logo-text.png" alt="Battlecry" width="256">
   </a>
 </p>
@@ -22,7 +22,7 @@
 </p>
 
 <h3 align="center">
-  <a href="https://battlecry.pedrosm.com">Documentation</a>
+  <a href="https://battlecry.js.org/">Documentation</a>
    | 
   <a href="https://github.com/pedsmoreira/battlecry/blob/master/CONTRIBUTING.md">Contributing</a>
    | 

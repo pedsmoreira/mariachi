@@ -17,8 +17,9 @@
     "battlecry": "./bin/battlecry.js"
   },
   "files": [
-    "bin",
     "battlecry",
+    "bin",
+    "docs",
     "src",
     ".babelrc"
   ],
@@ -46,20 +47,20 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.26.0",
+    "battle-casex": "^0.0.1",
     "casex": "^1.0.0",
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "download-git-repo": "^1.0.2",
     "glob": "^7.1.2",
     "isbinaryfile": "^3.0.3",
-    "pluralize": "^7.0.0",
     "rimraf": "^2.6.2",
     "tmp": "^0.0.33"
   },
   "devDependencies": {
     "babel-jest": "^22.4.3",
     "docsify-cli": "^4.3.0",
-    "flow-bin": "^0.69.0",
+    "flow-bin": "^0.89.0",
     "flow-typed": "^2.4.0",
     "husky": "^0.14.3",
     "jest": "^22.4.3",

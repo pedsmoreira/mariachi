@@ -5,9 +5,9 @@ import mkdirp from 'mkdirp';
 import { basename, dirname, extname } from 'path';
 import { EOL } from 'os';
 import isBinaryFile from 'isbinaryfile';
+import { replacePatterns } from 'battle-casex';
 
 import glob from '../helpers/glob';
-import namedCasex from '../helpers/namedCasex';
 import log from '../helpers/log';
 
 export default class File {
@@ -15,13 +15,13 @@ export default class File {
   __text: string;
 
   constructor(path: string, name?: string) {
-    this.path = namedCasex(path, name);
+    this.path = replacePatterns(path, name);
   }
 
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
     const files = [];
 
-    glob(namedCasex(pattern, name), options).forEach(path => {
+    glob(replacePatterns(pattern, name), options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -60,7 +60,7 @@ export default class File {
 
   saveAs(path: string, name?: ?string): File {
     if (path.endsWith('/')) path += this.filename;
-    path = namedCasex(path, name);
+    path = replacePatterns(path, name);
 
     const creating = !fs.existsSync(path);
     mkdirp.sync(dirname(path));
@@ -68,7 +68,7 @@ export default class File {
     if (this.binary) {
       fs.createReadStream(this.path).pipe(fs.createWriteStream(path));
     } else {
-      fs.writeFileSync(path, namedCasex(this.text, name));
+      fs.writeFileSync(path, replacePatterns(this.text, name));
     }
 
     if (creating) log.success(`✅  File created: ${path}`);
@@ -80,7 +80,7 @@ export default class File {
   move(path: string, name?: ?string): this {
     this.delete();
 
-    this.path = namedCasex(path, name);
+    this.path = replacePatterns(path, name);
     return this.save();
   }
 
@@ -121,7 +121,7 @@ export default class File {
   }
 
   replaceText(search: string | RegExp, replace: string, name?: string): this {
-    this.text = this.text.replace(search, namedCasex(replace, name));
+    this.text = this.text.replace(search, replacePatterns(replace, name));
     return this;
   }
 
@@ -130,14 +130,14 @@ export default class File {
   }
 
   replaceNames(name: string): this {
-    this.text = namedCasex(this.text, name);
+    this.text = replacePatterns(this.text, name);
     return this;
   }
 
   search(search: string | number, name?: string): number {
     if (typeof search === 'number') return search;
 
-    search = namedCasex(search, name);
+    search = replacePatterns(search, name);
     const lines = this.lines;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -150,7 +150,7 @@ export default class File {
   last(search: string | number, name?: string): number {
     if (typeof search === 'number') return search;
 
-    search = namedCasex(search, name);
+    search = replacePatterns(search, name);
     const lines = this.lines;
     for (let i = lines.length - 1; i >= 0; i--) {
       const line = lines[i];
@@ -162,7 +162,7 @@ export default class File {
 
   before(search: string | number, text: string | string[], name?: string): this {
     const lines = this.lines;
-    lines.splice(this.search(search), 0, namedCasex(text, name));
+    lines.splice(this.search(search), 0, replacePatterns(text, name));
 
     this.lines = lines;
     return this;
@@ -190,7 +190,7 @@ export default class File {
 
   replace(search: string | number, text: string | string[], name?: string): this {
     const lines = this.lines;
-    lines[this.search(search)] = namedCasex(text, name);
+    lines[this.search(search)] = replacePatterns(text, name);
 
     this.lines = lines;
     return this;

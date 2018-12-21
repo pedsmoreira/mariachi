@@ -990,6 +990,14 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+battle-casex@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/battle-casex/-/battle-casex-0.0.1.tgz#bdf7b4c3edd94a5faf8734d3407e6c92a0ed761a"
+  integrity sha512-sjm49VPXhiKcBZxssm65Q4YnP03cZP3Hmu2TiP4XJ9BwQx7Dx1bE9o7D29GanDv9veVIqQKrR+Ff9sAo9K2K6A==
+  dependencies:
+    casex "ˆ2.0.0 | ^3.0.0"
+    pluralize "^7.0.0"
+
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"
@@ -1218,6 +1226,11 @@ caseless@~0.12.0:
 casex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/casex/-/casex-1.0.0.tgz#2e478828286edf9663b3c234def4ada0646d63d9"
+
+"casex@ˆ2.0.0 | ^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/casex/-/casex-3.0.0.tgz#97104bfa93d6535cf4608f32aa80ba87d351b427"
+  integrity sha512-fBWw2Hur76NRY92xwgWKV2LoVc423HgxY625Tou+iG1SiZX3aNLT9oMgGz8FuStKv9kjpGxMeG5Kb9ybNnci3w==
 
 caw@^2.0.0:
   version "2.0.1"
@@ -2200,9 +2213,10 @@ find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-flow-bin@^0.69.0:
-  version "0.69.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.69.0.tgz#053159a684a6051fcbf0b71a2eb19a9679082da6"
+flow-bin@^0.89.0:
+  version "0.89.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.89.0.tgz#6bd29c2af7e0f429797f820662f33749105c32fa"
+  integrity sha512-DkO4PsXYrl53V6G5+t5HbRMC5ajYUQej2LEGPUZ+j9okTb41Sn5j9vfxsCpXMEAslYnQoysHhYu4GUZsQX/DrQ==
 
 flow-typed@^2.4.0:
   version "2.4.0"
@@ -4454,6 +4468,7 @@ please-upgrade-node@^3.0.2:
 pluralize@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
+  integrity sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==
 
 pn@^1.1.0:
   version "1.1.0"

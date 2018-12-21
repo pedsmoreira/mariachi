@@ -130,7 +130,7 @@ describe('File', () => {
       expect(new File(path).text).toEqual('abc');
     });
 
-    it('applies namedCasex to file path', () => {
+    it('applies battle-casex to file path', () => {
       const path = `${tmpPath}/save-__na-me__.txt`;
       const realPath = `${tmpPath}/save-with-cool-name.txt`;
 
