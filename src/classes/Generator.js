@@ -116,8 +116,8 @@ export default class Generator {
    * Chain helpers
    */
 
-  generator(name: string): Generator {
-    return this.battlecry.generator(name);
+  generator(name?: string): Generator {
+    return this.battlecry.generator(name || this.name);
   }
 
   setOptions(options: Options): this {
