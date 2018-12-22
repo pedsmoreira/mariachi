@@ -83,11 +83,11 @@ export default class GeneratorMethod {
   helpTitle() {
     const { args, description } = this.config;
 
-    const name = chalk.hex('#009B3A')(this.alias || this.name);
-    const generatorName = chalk.yellow(this.generator.name);
+    const name = chalk.hex(logger.BRASIL_GREEN)(this.alias || this.name);
+    const generatorName = chalk.hex(logger.BRASIL_YELLOW)(this.generator.name);
     let text = `cry ${name} ${generatorName} ${args || ''}`;
 
     logger.default(text);
-    if (description) logger.log(chalk.hex('#AAA'), description);
+    if (description) logger.log(chalk.hex(logger.MUTED), description);
   }
 }

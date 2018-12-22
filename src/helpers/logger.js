@@ -9,6 +9,12 @@ class Log {
   indentation: number = INDENTATION;
   hasEmptyLine: boolean = false;
 
+  BRASIL_GREEN = '#009B3A';
+  BRASIL_YELLOW = '#FEDF00';
+  BRASIL_BLUE = '#002776';
+
+  MUTED = '#AAA';
+
   addIndentation() {
     this.indentation += INDENTATION;
   }
@@ -27,7 +33,7 @@ class Log {
   }
 
   success(message: string) {
-    this.log(chalk.hex('#009B3A'), message);
+    this.log(chalk.hex(this.BRASIL_GREEN), message);
   }
 
   warn(message: string) {

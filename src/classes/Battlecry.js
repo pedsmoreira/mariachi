@@ -12,11 +12,35 @@ import Generator from './Generator';
 import glob, { defaultOptions as defaultGlobOptions } from '../helpers/glob';
 import logger from '../helpers/logger';
 
+type NamedArgv = {
+  node: string,
+  bin: string,
+  method: string,
+  generator: string,
+  rest: string[]
+};
+
 export default class Battlecry {
+  argv: string[];
+  namedArgv: NamedArgv;
+
   executed: boolean;
 
   aliases: { [alias: string]: string } = {};
   generators: { [name: string]: Generator } = {};
+
+  constructor(argv: string[]) {
+    this.argv = argv;
+
+    const [node, bin, method, generator, ...rest] = argv;
+    this.namedArgv = {
+      node,
+      bin,
+      method,
+      generator,
+      rest
+    };
+  }
 
   load(path: string) {
     this.setup(path);
@@ -78,7 +102,7 @@ export default class Battlecry {
   }
 
   help() {
-    const singleGenerator = this.generators[this.argvGenerator];
+    const singleGenerator = this.generators[this.namedArgv.generator];
     if (singleGenerator) return this.singleHelp(singleGenerator);
 
     Object.values(this.generators).forEach((generator: any) => {
@@ -91,9 +115,9 @@ export default class Battlecry {
     logger.emptyLine();
     logger.log(
       chalk.bold,
-      chalk.hex('#009B3A')('🥁 Bat') +
-        chalk.hex('#FEDF00')('tle') +
-        chalk.hex('#002776')('cry') +
+      chalk.hex(logger.BRASIL_GREEN)('🥁 Bat') +
+        chalk.hex(logger.BRASIL_YELLOW)('tle') +
+        chalk.hex(logger.BRASIL_BLUE)('cry') +
         ': Open source scaffolding CLI for everyone'
     );
     logger.emptyLine();
@@ -110,21 +134,18 @@ export default class Battlecry {
 
     logger.success(`🇧🇷  Pedro S. Moreira`);
     logger.addIndentation();
-    logger.log(chalk.hex('#002776'), '🌎  http://pedrosm.com/');
-    logger.log(chalk.hex('#FEDF00'), '💻  https://github.com/pedsmoreira');
+    logger.log(chalk.hex(logger.BRASIL_BLUE), '🌎  http://pedrosm.com/');
+    logger.log(chalk.hex(logger.BRASIL_YELLOW), '💻  https://github.com/pedsmoreira');
 
     logger.emptyLine();
     process.exit();
   }
 
-  get argvGenerator() {
-    return process.argv[3];
-  }
-
   get transmutedArgv(): string[] {
-    const [node, bin, method, generator, ...rest] = process.argv;
+    const { node, bin, method, generator, rest } = this.namedArgv;
+
     if (['--about', '-A'].includes(method)) this.about();
-    if (['--help', '-h', '--version', '-V'].includes(method)) return process.argv;
+    if (['--help', '-h', '--version', '-V'].includes(method)) return this.argv;
 
     const aliasedMethod = this.aliases[method] || method;
     return [node, bin, `${aliasedMethod}-${generator}`, ...rest];

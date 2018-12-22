@@ -165,7 +165,7 @@ export default class Generator {
    */
 
   help() {
-    logger.default(chalk.white(`🥁  ${this.name}`));
+    logger.default(`🥁  ${this.name}`);
     logger.addIndentation();
     this.methods.forEach(method => method.help());
     logger.removeIndentation();

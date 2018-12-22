@@ -37,7 +37,7 @@ export default class OptionBuilder {
   }
 
   help() {
-    let optionText = chalk.blueBright(`    -${this.alias} --${this.name}`);
+    let optionText = chalk.hex(logger.BRASIL_BLUE)(`    -${this.alias} --${this.name}`);
 
     if (this.arg === 'required') {
       optionText += chalk.cyanBright(` value`);
@@ -45,6 +45,6 @@ export default class OptionBuilder {
       optionText += chalk.hex('#99C')(` value?`);
     }
 
-    logger.default(`${optionText} \t${chalk.hex('#AAA')(this.description)}`);
+    logger.default(`${optionText} \t${chalk.hex(logger.MUTED)(this.description)}`);
   }
 }
