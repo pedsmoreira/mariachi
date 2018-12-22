@@ -89,6 +89,16 @@ export default class Battlecry {
 
   about() {
     logger.emptyLine();
+    logger.log(
+      chalk.bold,
+      chalk.hex('#009B3A')('🥁 Bat') +
+        chalk.hex('#FEDF00')('tle') +
+        chalk.hex('#002776')('cry') +
+        ': Open source scaffolding CLI for everyone'
+    );
+    logger.emptyLine();
+
+    logger.emptyLine();
     logger.default('📁 Docs:');
     logger.emptyLine();
     logger.success('https://battlecry.js.org');
