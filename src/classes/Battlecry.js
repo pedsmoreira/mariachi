@@ -97,7 +97,13 @@ export default class Battlecry {
   }
 
   singleHelp(generator: Generator) {
+    logger.default(`Help for ${generator.name} generator:`);
+    logger.emptyLine();
+
     generator.help();
+    logger.emptyLine();
+
+    logger.default(`To show all generators run --help without a generator name`);
     logger.emptyLine();
   }
 
