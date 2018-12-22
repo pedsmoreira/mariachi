@@ -8,7 +8,7 @@ import isBinaryFile from 'isbinaryfile';
 import { replacePatterns, joinLines } from 'battle-casex';
 
 import glob from '../helpers/glob';
-import log from '../helpers/log';
+import logger from '../helpers/logger';
 
 export default class File {
   path: string;
@@ -85,8 +85,8 @@ export default class File {
       fs.writeFileSync(path, replacePatterns(this.text, name));
     }
 
-    if (creating) log.success(`✅  File created: ${path}`);
-    else log.success(`☑️  File updated: ${path}`);
+    if (creating) logger.success(`✅  File created: ${path}`);
+    else logger.success(`☑️  File updated: ${path}`);
 
     return new File(path);
   }
@@ -100,7 +100,7 @@ export default class File {
 
   delete(): void {
     fs.unlinkSync(this.path);
-    log.success(`🔥  File deleted: ${this.path}`);
+    logger.success(`🔥  File deleted: ${this.path}`);
   }
 
   /*

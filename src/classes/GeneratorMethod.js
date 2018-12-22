@@ -7,7 +7,7 @@ import Generator from './Generator';
 import OptionBuilder, { type OptionProperties } from './OptionBuilder';
 import ArgBuilder from './ArgBuilder';
 
-import log from '../helpers/log';
+import logger from '../helpers/logger';
 
 export type MethodConfig = {
   options?: OptionProperties,
@@ -74,7 +74,7 @@ export default class GeneratorMethod {
   }
 
   help(): void {
-    log.emptyLine();
+    logger.emptyLine();
     this.helpTitle();
 
     this.options.forEach(option => option.help());
@@ -83,11 +83,11 @@ export default class GeneratorMethod {
   helpTitle() {
     const { args, description } = this.config;
 
-    const name = chalk.green(this.alias || this.name);
+    const name = chalk.hex('#009B3A')(this.alias || this.name);
     const generatorName = chalk.yellow(this.generator.name);
     let text = `cry ${name} ${generatorName} ${args || ''}`;
 
-    log.default(text);
-    if (description) log.log(chalk.hex('#AAA'), description);
+    logger.default(text);
+    if (description) logger.log(chalk.hex('#AAA'), description);
   }
 }

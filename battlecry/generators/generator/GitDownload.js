@@ -4,7 +4,7 @@ import fs from 'fs';
 import tmp from 'tmp';
 import downloadGitRepo from 'download-git-repo';
 import { basename, join } from 'path';
-import { log, File } from 'battlecry';
+import { logger, File } from 'battlecry';
 
 export default class GitDownload {
   repository: string;
@@ -20,7 +20,7 @@ export default class GitDownload {
   async handle() {
     // $FlowFixMe
     return new Promise((resolve, reject) => {
-      log.success(`☁️  Downloading ${this.repository} repository`);
+      logger.success(`☁️  Downloading ${this.repository} repository`);
       downloadGitRepo(this.repository, this.tmpPath, err => {
         if (err) return reject(err);
 
@@ -47,7 +47,7 @@ export default class GitDownload {
     this.logBattlecryFolderGuessed();
     this.logCopyingPath();
 
-    log.addIndentation();
+    logger.addIndentation();
 
     const globPath = this.hasBattlecry ? this.battlecryPath : this.path;
     File.glob(join(globPath, '**')).forEach(file => {
@@ -55,11 +55,11 @@ export default class GitDownload {
       file.saveAs(newPath);
     });
 
-    log.removeIndentation();
+    logger.removeIndentation();
   }
 
   logBattlecryFolderGuessed() {
-    if (this.hasBattlecry) log.success('🧠  Found a battlecry/ folder at the selected directory');
+    if (this.hasBattlecry) logger.success('🧠  Found a battlecry/ folder at the selected directory');
   }
 
   logCopyingPath() {
@@ -68,6 +68,6 @@ export default class GitDownload {
     if (this.hasBattlecry) logPath = join(logPath, 'battlecry');
     if (!logPath.endsWith('/')) logPath += '/';
 
-    log.success(`📋  Copying all files from repository dir: ${logPath}`);
+    logger.success(`📋  Copying all files from repository dir: ${logPath}`);
   }
 }

@@ -13,7 +13,7 @@ import Battlecry from './Battlecry';
 import GeneratorMethod, { type MethodConfig } from './GeneratorMethod';
 
 import dd from '../helpers/dd';
-import log from '../helpers/log';
+import logger from '../helpers/logger';
 
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
@@ -41,7 +41,7 @@ export default class Generator {
 
   register(): void {
     if (!this.methods.length) {
-      log.warn(`Skipping generator ${basename(this.path)} - no methods in 'config'`);
+      logger.warn(`Skipping generator ${basename(this.path)} - no methods in 'config'`);
     }
 
     this.methods.forEach(method => method.register());
@@ -57,15 +57,15 @@ export default class Generator {
       const method: Function = this[methodName];
       if (!method) this.throwMethodNotImplemented(methodName);
 
-      log.emptyLine();
-      log.success(`🥁  Playing: ${methodName} ${this.name}`);
-      log.addIndentation();
+      logger.emptyLine();
+      logger.success(`🥁  Playing: ${methodName} ${this.name}`);
+      logger.addIndentation();
 
       const response = method.bind(this)();
       if (response) await response;
 
-      log.removeIndentation();
-      log.emptyLine();
+      logger.removeIndentation();
+      logger.emptyLine();
     } catch (error) {
       // Async/await must be wrapped by a try catch
       dd(error);
@@ -90,7 +90,7 @@ export default class Generator {
   delete(path: string, name?: string): void {
     path = replacePatterns(path, name);
     rimraf.sync(path);
-    log.success(`🔥  Path deleted: ${path}`);
+    logger.success(`🔥  Path deleted: ${path}`);
   }
 
   /*
@@ -153,10 +153,10 @@ export default class Generator {
    */
 
   exec(command: string): string | Buffer {
-    log.success(`🏃  Exec command: ${command}`);
-    log.addIndentation();
+    logger.success(`🏃  Exec command: ${command}`);
+    logger.addIndentation();
     const result = execSync(command);
-    log.removeIndentation();
+    logger.removeIndentation();
     return result;
   }
 
@@ -165,10 +165,10 @@ export default class Generator {
    */
 
   help() {
-    log.default(chalk.white(`🥁  ${this.name}`));
-    log.addIndentation();
+    logger.default(chalk.white(`🥁  ${this.name}`));
+    logger.addIndentation();
     this.methods.forEach(method => method.help());
-    log.removeIndentation();
+    logger.removeIndentation();
   }
 
   /*

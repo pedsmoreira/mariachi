@@ -18,7 +18,7 @@ You can import them in case you need to so something that can't be covered by fi
   * [pluralize](https://github.com/blakeembrey/pluralize)
 
 - Battlecry display helpers
-  * [log](https://github.com/pedsmoreira/battlecry/blob/master/src/helpers/log.js)
+  * [log](https://github.com/pedsmoreira/battlecry/blob/master/src/helpers/logger.js)
   * [dd](https://github.com/pedsmoreira/battlecry/blob/master/src/helpers/dd.js)
 
 * Battlecry classes

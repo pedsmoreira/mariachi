@@ -10,7 +10,7 @@ import pkg from '../../package.json';
 import Generator from './Generator';
 
 import glob, { defaultOptions as defaultGlobOptions } from '../helpers/glob';
-import log from '../helpers/log';
+import logger from '../helpers/logger';
 
 export default class Battlecry {
   executed: boolean;
@@ -25,7 +25,7 @@ export default class Battlecry {
       const generatorClass = require(path).default;
       const name = basename(path, '.generator.js');
 
-      if (!generatorClass) return log.warn(`Skipping generator ${basename(path)} - missing export default`);
+      if (!generatorClass) return logger.warn(`Skipping generator ${basename(path)} - missing export default`);
       this.generators[name] = this.createGenerator(name, path, generatorClass);
     });
   }
@@ -39,7 +39,7 @@ export default class Battlecry {
       const fn: Function = require(setupPath).default;
 
       if (fn) fn(this);
-      else log.warn(`Skipping battlecry-setup.js in folder ${basename(path)} - empty file`);
+      else logger.warn(`Skipping battlecry-setup.js in folder ${basename(path)} - empty file`);
     }
   }
 
@@ -72,25 +72,43 @@ export default class Battlecry {
     Object.keys(this.generators).forEach(name => this.generators[name].register());
   }
 
+  singleHelp(generator: Generator) {
+    generator.help();
+    logger.emptyLine();
+  }
+
   help() {
-    Object.keys(this.generators).forEach(name => {
-      this.generators[name].help();
-      log.emptyLine();
+    const singleGenerator = this.generators[this.argvGenerator];
+    if (singleGenerator) return this.singleHelp(singleGenerator);
+
+    Object.values(this.generators).forEach((generator: any) => {
+      generator.help();
+      logger.emptyLine();
     });
   }
 
   about() {
-    log.emptyLine();
-    log.default('Creator:');
-    log.emptyLine();
+    logger.emptyLine();
+    logger.default('📁 Docs:');
+    logger.emptyLine();
+    logger.success('https://battlecry.js.org');
+    logger.emptyLine();
 
-    log.success(`🇧🇷  Pedro S. Moreira`);
-    log.addIndentation();
-    log.log(chalk.blueBright, '🌎  http://pedrosm.com/');
-    log.log(chalk.yellow, '💻  https://github.com/pedsmoreira');
+    logger.emptyLine();
+    logger.default('Creator:');
+    logger.emptyLine();
 
-    log.emptyLine();
+    logger.success(`🇧🇷  Pedro S. Moreira`);
+    logger.addIndentation();
+    logger.log(chalk.hex('#002776'), '🌎  http://pedrosm.com/');
+    logger.log(chalk.hex('#FEDF00'), '💻  https://github.com/pedsmoreira');
+
+    logger.emptyLine();
     process.exit();
+  }
+
+  get argvGenerator() {
+    return process.argv[3];
   }
 
   get transmutedArgv(): string[] {
@@ -117,8 +135,8 @@ export default class Battlecry {
       program.outputHelp();
 
       // $FlowFixMe
-      log.warn('Command not found. Check the commands available above');
-      log.emptyLine();
+      logger.warn('Command not found. Check the commands available above');
+      logger.emptyLine();
     }
   }
 }

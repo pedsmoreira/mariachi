@@ -1,4 +1,4 @@
-import { Generator, log } from 'battlecry';
+import { Generator, logger } from 'battlecry';
 
 export default class CustomAliasesGenerator extends Generator {
   config = {
@@ -7,10 +7,10 @@ export default class CustomAliasesGenerator extends Generator {
   };
 
   strike() {
-    log.success('Strike!!!');
+    logger.success('Strike!!!');
   }
 
   roll() {
-    log.success("That's how we roll!");
+    logger.success("That's how we roll!");
   }
 }

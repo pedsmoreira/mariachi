@@ -1,11 +1,12 @@
 // @flow
 
 import chalk from 'chalk';
+import spaces from './spaces';
 
-const INDENTATION = '   ';
+const INDENTATION = 3;
 
 class Log {
-  indentation: string = '';
+  indentation: number = INDENTATION;
   hasEmptyLine: boolean = false;
 
   addIndentation() {
@@ -13,13 +14,12 @@ class Log {
   }
 
   removeIndentation() {
-    if (this.indentation.length)
-      this.indentation = this.indentation.substring(0, this.indentation.length - INDENTATION.length);
+    if (this.indentation) this.indentation -= INDENTATION;
   }
 
   log(chalker: Function, message: string) {
     this.hasEmptyLine = false;
-    console.log(chalker(this.indentation + message));
+    console.log(chalker(spaces(this.indentation, message)));
   }
 
   default(message: string) {
@@ -27,11 +27,10 @@ class Log {
   }
 
   success(message: string) {
-    this.log(chalk.green, message);
+    this.log(chalk.hex('#009B3A'), message);
   }
 
   warn(message: string) {
-    // $FlowFixMe
     this.log(chalk, `⚠️  ${message}`);
   }
 
