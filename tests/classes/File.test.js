@@ -18,6 +18,26 @@ describe('File', () => {
     rimraf.sync(tmpPath);
   });
 
+  describe('#existing', () => {
+    const file = new File(`${fixturesPath}/a.txt`);
+
+    describe('when the file exists', () => {
+      it('returns the file at the given path with its contents', () => {
+        const existingFile = file.existing(`${fixturesPath}/b.txt`);
+        expect(existingFile.path).toEqual(`${fixturesPath}/b.txt`);
+        expect(existingFile.text).toEqual('content on file b');
+      });
+    });
+
+    describe('when the file does not exist', () => {
+      it('returns a file at the requested path and current contents (template)', () => {
+        const existingFile = file.existing(`${fixturesPath}/new-file`);
+        expect(existingFile.path).toEqual(`${fixturesPath}/new-file`);
+        expect(existingFile.text).toEqual('content on file a');
+      });
+    });
+  });
+
   describe('.glob', () => {
     it('returns file paths', () => {
       const globA = File.glob(`${fixturesPath}/a.*`);
@@ -72,6 +92,12 @@ describe('File', () => {
 
     it('returns false if file does not exist', () => {
       expect(new File(`file-that-does-not-exist`).exists).toBeFalsy();
+    });
+  });
+
+  describe('#name', () => {
+    it('returns file name without', () => {
+      expect(new File(`some-folder/a.txt`).name).toEqual('a');
     });
   });
 
