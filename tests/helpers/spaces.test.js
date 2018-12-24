@@ -1,6 +1,6 @@
 import { spaces } from 'battlecry';
 
-describe('#spaces', () => {
+describe('spaces', () => {
   describe('given an array', () => {
     it('adds spaces to each line', () => {
       const text = spaces(2, ['one', 'two', 'three']);

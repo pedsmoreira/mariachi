@@ -11,13 +11,13 @@ import glob from '../helpers/glob';
 import logger from '../helpers/logger';
 
 import Line from './Line';
-import LineCollection from './LineCollection';
+import LineCollection, { type LineCollectionType } from './LineCollection';
 
 const LINE_BREAK = /\r?\n/;
 
 export default class File {
   path: string;
-  _lines: LineCollection = new LineCollection();
+  _lines: LineCollectionType;
 
   constructor(path: string, name?: string) {
     this.path = replacePatterns(path, name);
@@ -121,14 +121,14 @@ export default class File {
   }
 
   get text(): string {
-    return joinLines(this.lines.map.text);
+    return joinLines(this.lines.map(line => line.text));
   }
 
   set text(text: string): void {
-    this.lines = this.text.split(LINE_BREAK);
+    this.lines = text.split(LINE_BREAK);
   }
 
-  get lines(): LineCollection {
+  get lines(): LineCollectionType {
     if (this.binary) throw new Error('Attempting to treat binary file as text');
 
     if (!this._lines) this.read();
@@ -136,6 +136,7 @@ export default class File {
   }
 
   set lines(texts: string[]): void {
+    // $FlowFixMe
     this._lines = new LineCollection();
     this.add(0, texts);
   }
@@ -148,8 +149,9 @@ export default class File {
     return this.all(search, name, { limit: 1, lines: this.lines.reverse() })[0] || this.throwSearchNotFound(search);
   }
 
-  all(search: string, name?: string, options: Object = {}): LineCollection {
-    const collection = new LineCollection();
+  all(search: string, name?: string, options: Object = {}): LineCollectionType {
+    // $FlowFixMe
+    const collection: LineCollectionType = new LineCollection();
 
     search = replacePatterns(search, name);
     const limit = options.limit || 1;
@@ -163,13 +165,14 @@ export default class File {
     return collection;
   }
 
-  add(index: number, text: string | string[]): LineCollection {
+  add(index: number, text: string | string[]): LineCollectionType {
     if (!Array.isArray(text)) text = [text];
 
-    const collection = new LineCollection();
+    // $FlowFixMe
+    const collection: LineCollectionType = new LineCollection();
     collection.push(...text.map(text => new Line(this, text)));
 
-    this._lines.push(...collection);
+    this._lines.splice(index, 0, ...collection);
     return collection;
   }
 

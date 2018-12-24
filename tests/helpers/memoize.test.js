@@ -9,7 +9,7 @@ class Test {
   }
 }
 
-describe('#memoize', () => {
+describe('memoize', () => {
   it('only calls function once', () => {
     const instance = new Test();
 
