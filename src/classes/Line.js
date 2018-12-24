@@ -32,12 +32,12 @@ export default class Line {
     return this;
   }
 
-  before(text: string | string[]): LineCollectionType {
-    return this.file.add(this.index, text);
+  before(...texts: string[]): LineCollectionType {
+    return this.file.add(this.index, texts);
   }
 
-  after(text: string | string[]): LineCollectionType {
-    return this.file.add(this.index + 1, text);
+  after(...texts: string[]): LineCollectionType {
+    return this.file.add(this.index + 1, texts);
   }
 
   prepend(text: string, name?: string): this {

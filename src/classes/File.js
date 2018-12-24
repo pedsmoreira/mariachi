@@ -146,7 +146,8 @@ export default class File {
   }
 
   last(search: string, name?: string): Line {
-    return this.all(search, name, { limit: 1, lines: this.lines.reverse() })[0] || this.throwSearchNotFound(search);
+    const options = { limit: 1, lines: this.lines.slice().reverse() };
+    return this.all(search, name, options)[0] || this.throwSearchNotFound(search);
   }
 
   all(search: string, name?: string, options: Object = {}): LineCollectionType {
