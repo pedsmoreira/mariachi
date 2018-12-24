@@ -10,9 +10,14 @@ import { replacePatterns, joinLines } from 'battle-casex';
 import glob from '../helpers/glob';
 import logger from '../helpers/logger';
 
+import Line from './Line';
+import LineCollection from './LineCollection';
+
+const LINE_BREAK = /\r?\n/;
+
 export default class File {
   path: string;
-  __text: string;
+  _lines: LineCollection = new LineCollection();
 
   constructor(path: string, name?: string) {
     this.path = replacePatterns(path, name);
@@ -111,118 +116,69 @@ export default class File {
     return joinLines(lines);
   }
 
-  readText() {
+  read() {
     this.text = this.exists ? fs.readFileSync(this.path, 'utf8') : '';
   }
 
   get text(): string {
-    if (this.binary) throw new Error('Attempting to treat binary file as text');
-
-    if (!this.__text) this.readText();
-    return this.__text;
+    return joinLines(this.lines.map.text);
   }
 
   set text(text: string): void {
-    this.__text = text;
+    this.lines = this.text.split(LINE_BREAK);
   }
 
-  get lines(): string[] {
-    return this.text.split(/\r?\n/);
+  get lines(): LineCollection {
+    if (this.binary) throw new Error('Attempting to treat binary file as text');
+
+    if (!this._lines) this.read();
+    return this._lines;
   }
 
-  set lines(lines: string[]): void {
-    this.text = File.joinLines(lines);
+  set lines(texts: string[]): void {
+    this._lines = new LineCollection();
+    this.add(0, texts);
   }
 
-  replaceText(search: string | RegExp, replace: string, name?: string): this {
-    this.text = this.text.replace(search, replacePatterns(replace, name));
-    return this;
+  find(search: string, name?: string): Line {
+    return this.all(search, name, { limit: 1 })[0] || this.throwSearchNotFound(search);
   }
 
-  replaceAllText(search: string, replace: string, name?: string): this {
-    return this.replaceText(new RegExp(search, 'g'), replace, name);
+  last(search: string, name?: string): Line {
+    return this.all(search, name, { limit: 1, lines: this.lines.reverse() })[0] || this.throwSearchNotFound(search);
   }
 
-  replaceNames(name: string): this {
-    this.text = replacePatterns(this.text, name);
-    return this;
-  }
-
-  search(search: string | number, name?: string): number {
-    if (typeof search === 'number') return search;
+  all(search: string, name?: string, options: Object = {}): LineCollection {
+    const collection = new LineCollection();
 
     search = replacePatterns(search, name);
-    const lines = this.lines;
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      if (line.indexOf(search) !== -1) return i;
-    }
+    const limit = options.limit || 1;
+    const lines = options.lines || this.lines;
 
+    lines.forEach((line: Line) => {
+      if (line.text.includes(search)) collection.push(line);
+      if (collection.length >= limit) return false;
+    });
+
+    return collection;
+  }
+
+  add(index: number, text: string | string[]): LineCollection {
+    if (!Array.isArray(text)) text = [text];
+
+    const collection = new LineCollection();
+    collection.push(...text.map(text => new Line(this, text)));
+
+    this._lines.push(...collection);
+    return collection;
+  }
+
+  remove(line: number | Line) {
+    const index = typeof line === 'number' ? line : line.index;
+    this.lines.splice(index, 1);
+  }
+
+  throwSearchNotFound(search: string) {
     throw new Error(`'${search}' not found on file ${this.path}`);
-  }
-
-  last(search: string | number, name?: string): number {
-    if (typeof search === 'number') return search;
-
-    search = replacePatterns(search, name);
-    const lines = this.lines;
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i];
-      if (line.indexOf(search) !== -1) return i;
-    }
-
-    throw new Error(`'${search}' not found on file ${this.path}`);
-  }
-
-  before(search: string | number, text: string | string[], name?: string): this {
-    const lines = this.lines;
-    lines.splice(this.search(search), 0, replacePatterns(text, name));
-
-    this.lines = lines;
-    return this;
-  }
-
-  beforeLast(search: string | number, text: string | string[], name?: string): this {
-    return this.before(this.last(search), text, name);
-  }
-
-  after(search: number | string, text: string | string[], name?: string): this {
-    return this.before(this.search(search) + 1, text, name);
-  }
-
-  afterLast(search: number | string, text: string | string[], name?: string): this {
-    return this.after(this.last(search), text, name);
-  }
-
-  prepend(text: string | string[], name?: string): this {
-    return this.before(0, text, name);
-  }
-
-  append(text: string | string[], name?: string): this {
-    return this.before(this.lines.length, text, name);
-  }
-
-  replace(search: string | number, text: string | string[], name?: string): this {
-    const lines = this.lines;
-    lines[this.search(search)] = replacePatterns(text, name);
-
-    this.lines = lines;
-    return this;
-  }
-
-  replaceLast(search: string | number, text: string | string[], name?: string): this {
-    return this.replace(this.last(search), text, name);
-  }
-
-  remove(search: string | number, name?: string): this {
-    const lines = this.lines;
-    lines.splice(this.search(search, name), 1);
-
-    this.lines = lines;
-    return this;
-  }
-
-  removeLast(search: string | number, name?: string): this {
-    return this.remove(this.last(search, name));
   }
 }
