@@ -40,13 +40,33 @@ export default class Line {
     return this.file.add(this.index + 1, texts);
   }
 
-  until(line: Line | number): LineCollectionType {
-    const index = typeof line === 'number' ? line : line.index;
+  until(value: Line | number | (Line => any)): LineCollectionType {
+    let index: number = 0;
+
+    if (typeof value === 'number') index = value;
+    else if (value instanceof Line) index = value.index;
+    else {
+      // $FlowFixMe
+      index = this.allNext.find(line => line.last || value(line)).index;
+    }
 
     const start = Math.min(this.index, index);
     const end = Math.max(this.index, index);
 
-    return new LineCollection(...this.file.lines.slice(start, end));
+    return new LineCollection(...this.file.lines.slice(start, end + 1));
+  }
+
+  untilLast(search: string | (Line => any)): LineCollectionType {
+    // $FlowFixMe
+    const lastMatching: Line = this.allNext.find(line => {
+      return line.last || typeof search === 'string' ? !line.text.includes(search) : !search(line);
+    });
+
+    return this.until(lastMatching.previous);
+  }
+
+  get untilEnclosing(): LineCollectionType {
+    return this.until(this.enclosing);
   }
 
   prepend(text: string, name?: string): this {
@@ -55,7 +75,14 @@ export default class Line {
   }
 
   leftPad(text: string, name?: string): this {
+    text = replacePatterns(text, name);
     return this.text.startsWith(text) ? this : this.prepend(text, name);
+  }
+
+  leftUnpad(text: string, name?: string): this {
+    text = replacePatterns(text, name);
+    if (this.text.startsWith(text)) this.text = this.text.substring(text.length, this.text.length);
+    return this;
   }
 
   append(text: string, name?: string): this {
@@ -64,7 +91,14 @@ export default class Line {
   }
 
   rightPad(text: string, name?: string): this {
+    text = replacePatterns(text, name);
     return this.text.endsWith(text) ? this : this.append(text, name);
+  }
+
+  rightUnpad(text: string, name?: string): this {
+    text = replacePatterns(text, name);
+    if (this.text.endsWith(text)) this.text = this.text.substring(0, this.text.length - text.length);
+    return this;
   }
 
   replace(search: string | RegExp, text: string, name?: string): this {
@@ -86,9 +120,34 @@ export default class Line {
     return this.file.lines[this.index - 1];
   }
 
+  get allPrevious(): LineCollectionType {
+    return new LineCollection(...this.file.lines.slice(0, this.index));
+  }
+
   get next(): Line {
     if (this.last) throw new Error('Attempting to call "last" on last line of the file.');
     return this.file.lines[this.index + 1];
+  }
+
+  get allNext(): LineCollectionType {
+    return new LineCollection(...this.file.lines.slice(this.index + 1));
+  }
+
+  up(): this {
+    if (this.first) throw new Error('Attempting to call "up" on first line of the file.');
+    return this.move(this.index - 1);
+  }
+
+  down(): this {
+    if (this.last) throw new Error('Attempting to call "down" on last line of the file.');
+    return this.move(this.index + 1);
+  }
+
+  move(index: number): this {
+    this.remove();
+    this.file.add(index, this);
+
+    return this;
   }
 
   get enclosing(): Line {

@@ -2,15 +2,16 @@
 
 export default function withMethodMissing(Klass: Function) {
   return class extends Klass {
-    _methodMissingProxy: Proxy<Klass>;
+    _proxy: Proxy<Klass>;
 
     constructor(...args: any[]) {
       super(...args);
 
-      const handler = { get: this._handleMethodMissing };
-      this._methodMissingProxy = new Proxy(this, handler);
+      this._proxy = new Proxy(this, {
+        get: this._handleMethodMissing
+      });
 
-      return this._methodMissingProxy;
+      return this._proxy;
     }
 
     _handleMethodMissing = (target: Object, name: any) => {
@@ -18,7 +19,7 @@ export default function withMethodMissing(Klass: Function) {
       if (value !== undefined) return typeof value === 'function' ? value.bind(target) : value;
 
       const customMethodMissing = !!target._createMethodMissingFn;
-      const fn = (...args: any) => target.__methodMissing__(name, args, this._methodMissingProxy);
+      const fn = (...args: any) => target.__methodMissing__(name, args);
 
       return customMethodMissing ? target._createMethodMissingFn(target, name, fn) : fn;
     };

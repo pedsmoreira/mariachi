@@ -128,6 +128,10 @@ export default class File {
     this.lines = text.split(LINE_BREAK);
   }
 
+  line(index: number): Line {
+    return this._lines.lines[index];
+  }
+
   get lines(): LineCollectionType {
     if (this.binary) throw new Error('Attempting to treat binary file as text');
 
@@ -136,7 +140,6 @@ export default class File {
   }
 
   set lines(texts: string[]): void {
-    // $FlowFixMe
     this._lines = new LineCollection();
     this.add(0, texts);
   }
@@ -151,7 +154,6 @@ export default class File {
   }
 
   all(search: string, name?: string, options: Object = {}): LineCollectionType {
-    // $FlowFixMe
     const collection: LineCollectionType = new LineCollection();
 
     search = replacePatterns(search, name);
@@ -166,12 +168,15 @@ export default class File {
     return collection;
   }
 
-  add(index: number, text: string | string[]): LineCollectionType {
-    if (!Array.isArray(text)) text = [text];
+  consecutive(search: string): LineCollectionType {
+    return this.find(search).untilLast(search);
+  }
 
-    // $FlowFixMe
+  add(index: number, items: any): LineCollectionType {
+    if (!Array.isArray(items)) items = [items];
+
     const collection: LineCollectionType = new LineCollection();
-    collection.push(...text.map(text => new Line(this, text)));
+    collection.push(...items.map(item => (item instanceof Line ? item : new Line(this, item))));
 
     this._lines.splice(index, 0, ...collection);
     return collection;
