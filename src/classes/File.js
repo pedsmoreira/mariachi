@@ -103,6 +103,13 @@ export default class File {
     return this.save();
   }
 
+  rename(path: string, name?: ?string) {
+    let filename = path;
+    if (!filename.includes('.')) filename += this.extension;
+
+    return this.move(`${this.dirname}/${filename}`, name);
+  }
+
   delete(): void {
     fs.unlinkSync(this.path);
     logger.success(`🔥  File deleted: ${this.path}`);
