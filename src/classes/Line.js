@@ -40,14 +40,31 @@ export default class Line {
     return this.file.add(this.index + 1, texts);
   }
 
+  until(line: Line | number): LineCollectionType {
+    const index = typeof line === 'number' ? line : line.index;
+
+    const start = Math.min(this.index, index);
+    const end = Math.max(this.index, index);
+
+    return new LineCollection(...this.file.lines.slice(start, end));
+  }
+
   prepend(text: string, name?: string): this {
     this.text = replacePatterns(`${text}${this.text}`, name);
     return this;
   }
 
+  leftPad(text: string, name?: string): this {
+    return this.text.startsWith(text) ? this : this.prepend(text, name);
+  }
+
   append(text: string, name?: string): this {
     this.text += text;
     return this;
+  }
+
+  rightPad(text: string, name?: string): this {
+    return this.text.endsWith(text) ? this : this.append(text, name);
   }
 
   replace(search: string | RegExp, text: string, name?: string): this {
@@ -74,7 +91,7 @@ export default class Line {
     return this.file.lines[this.index + 1];
   }
 
-  enclosing(): Line {
+  get enclosing(): Line {
     const length = this.indentation.length;
     let iterator: Line = this;
 
