@@ -189,6 +189,14 @@ export default class File {
     return collection;
   }
 
+  prepend(items: any): LineCollectionType {
+    return this.add(0, items);
+  }
+
+  append(items: any): LineCollectionType {
+    return this.add(this.lines.length, items);
+  }
+
   remove(line: number | Line) {
     const index = typeof line === 'number' ? line : line.index;
     this.lines.splice(index, 1);
