@@ -1,5 +1,5 @@
 export default function setup(battlecry) {
-  // Load additional generators here
+  // Load additional generators
   // battlecry.load('node_modules/battlecry-generatores-from-node-modules');
   //
   // Define new aliases

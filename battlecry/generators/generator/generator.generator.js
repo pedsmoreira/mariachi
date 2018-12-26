@@ -7,7 +7,7 @@ export default class GeneratorGenerator extends Generator {
   config = {
     generate: {
       args: 'name',
-      description: 'Generate a new generator'
+      description: 'Create a new generator with sample files'
     },
     destroy: {
       args: 'name',
