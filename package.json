@@ -1,6 +1,6 @@
 {
   "name": "battlecry",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "keywords": [
     "generate",
     "scaffold",
@@ -55,6 +55,7 @@
     "glob": "^7.1.2",
     "isbinaryfile": "^3.0.3",
     "rimraf": "^2.6.2",
+    "semver": "^5.6.0",
     "tmp": "^0.0.33"
   },
   "devDependencies": {

@@ -4,6 +4,8 @@ import { Generator } from 'battlecry';
 import GitDownload from './GitDownload';
 
 export default class GeneratorGenerator extends Generator {
+  compatibility = '1.x';
+
   config = {
     generate: {
       args: 'name',

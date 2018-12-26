@@ -7,6 +7,7 @@ import program from 'commander';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import { replacePatterns } from 'battle-casex';
+import semver from 'semver';
 
 import File from './File';
 import Battlecry from './Battlecry';
@@ -29,22 +30,24 @@ export default class Generator {
   name: string;
   path: string;
   battlecry: Battlecry;
+  compatibility: string | string[];
   config: { [method: string]: MethodConfig };
+
+  get basename() {
+    return basename(this.path);
+  }
 
   get methods(): GeneratorMethod[] {
     return Object.keys(this.config || {}).map(method => new GeneratorMethod(this, method));
   }
 
-  /*
-   * Actions
-   */
-
   register(): void {
-    if (!this.methods.length) {
-      logger.warn(`Skipping generator ${basename(this.path)} - no methods in 'config'`);
-    }
-
+    this.logRegistrationWarnings();
     this.methods.forEach(method => method.register());
+  }
+
+  get compatible() {
+    return semver.satisfies(this.battlecry.version, this.compatibility);
   }
 
   /*
@@ -61,6 +64,7 @@ export default class Generator {
       logger.success(`🥁  Playing: ${methodName} ${this.name}`);
       logger.addIndentation();
 
+      this.setDefaultOptions(this.methods[method].defaultOptions);
       const response = method.bind(this)();
       if (response) await response;
 
@@ -125,6 +129,10 @@ export default class Generator {
     return this;
   }
 
+  setDefaultOptions(options: Options): this {
+    return this.setOptions({ ...options, ...this.options });
+  }
+
   setArgs(args: Args): this {
     this.args = args;
     return this;
@@ -166,14 +174,41 @@ export default class Generator {
 
   help() {
     logger.default(`🥁  ${this.name}`);
+
     logger.addIndentation();
+    this.logRegistrationWarnings();
     this.methods.forEach(method => method.help());
     logger.removeIndentation();
   }
 
   /*
-   * Errors
+   * Logging & Errors
    */
+
+  logRegistrationWarnings() {
+    if (!this.methods.length) return this.logWarn('Empty', 'No methods in config');
+
+    if (!this.compatibility) {
+      return this.logWarn('Compability check skipped', `No compabitility provided`);
+    }
+
+    if (!this.compatible) {
+      return this.logWarn(
+        'Incompatible',
+        `Expected '${this.compatibility.toString()}' but the installed battlecry version is: '${
+          this.battlecry.version
+        }'`
+      );
+    }
+  }
+
+  logWarn(label: string, message: string) {
+    logger.warn(`[${label}] ${this.basename}`);
+    logger.addIndentation();
+    logger.default(message);
+    logger.removeIndentation();
+    logger.emptyLine();
+  }
 
   throwMethodNotImplemented(method: string): void {
     throw new Error(`Method ${method} not implemented on generator ${this.constructor.name}`);

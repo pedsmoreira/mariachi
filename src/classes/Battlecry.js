@@ -42,6 +42,10 @@ export default class Battlecry {
     };
   }
 
+  get version(): string {
+    return pkg.version;
+  }
+
   load(path: string) {
     this.setup(path);
     glob(`${path}/generators/*/*.generator.js`).forEach(path => {
@@ -162,7 +166,7 @@ export default class Battlecry {
 
     program
       // $FlowFixMe
-      .version(pkg.version)
+      .version(this.version)
       .usage('<method> <generator> [args] [options]')
       .option('-A, --about', 'output info about Battlecry contributors')
       .on('--help', () => this.help())

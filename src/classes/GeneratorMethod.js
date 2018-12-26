@@ -32,7 +32,7 @@ export default class GeneratorMethod {
     return this.generator.config[this.name];
   }
 
-  get args(): string {
+  get argBuilders(): string {
     const args = this.config.args;
     if (!args) return '';
 
@@ -42,13 +42,28 @@ export default class GeneratorMethod {
       .join(' ');
   }
 
-  get options(): OptionBuilder[] {
+  get options() {
+    return this.config.options || {};
+  }
+
+  get optionBuilders(): OptionBuilder[] {
+    return Object.keys(this.options).map(name => new OptionBuilder(name, this.options[name]));
+  }
+
+  get defaultOptions() {
+    const defaults = {};
+
     const options = this.config.options || {};
-    return Object.keys(options).map(name => new OptionBuilder(name, options[name]));
+    Object.keys(options).forEach(name => {
+      const option = this.options[name];
+      if (option.default !== undefined) defaults[name] = option.default;
+    });
+
+    return defaults;
   }
 
   get command(): string {
-    return `${this.name}-${this.generator.name} ${this.args}`;
+    return `${this.name}-${this.generator.name} ${this.argBuilders}`;
   }
 
   get action(): Function {
@@ -70,14 +85,14 @@ export default class GeneratorMethod {
       .command(this.command, '', { noHelp: true })
       .action(this.action);
 
-    this.options.forEach(option => cmd.option(option.build(), option.description));
+    this.optionBuilders.forEach(option => cmd.option(option.build(), option.description));
   }
 
   help(): void {
     logger.emptyLine();
     this.helpTitle();
 
-    this.options.forEach(option => option.help());
+    this.optionBuilders.forEach(option => option.help());
   }
 
   helpTitle() {

@@ -3,6 +3,8 @@
 import { Generator } from 'battlecry';
 
 export default class KitGenerator extends Generator {
+  compatibility = '1.x';
+
   config = {
     download: {
       args: 'repository',

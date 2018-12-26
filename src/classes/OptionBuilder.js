@@ -8,7 +8,8 @@ export type OptionProperties = {
   [name: string]: {
     description: string,
     arg?: 'required' | 'optional',
-    alias?: string
+    alias?: string,
+    default?: string
   }
 };
 
