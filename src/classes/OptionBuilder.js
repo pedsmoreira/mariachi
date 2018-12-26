@@ -18,12 +18,14 @@ export default class OptionBuilder {
   description: string;
   alias: string;
   arg: ?('required' | 'optional');
+  default: ?string;
 
   constructor(name: string, properties: Object) {
     this.name = name;
     this.description = properties.description;
     this.arg = properties.arg;
     this.alias = properties.alias || name[0];
+    this.default = properties.default === null ? 'null' : properties.default;
   }
 
   get commanderArg(): string {
@@ -46,6 +48,11 @@ export default class OptionBuilder {
       optionText += chalk.hex('#99C')(` value?`);
     }
 
-    logger.default(`${optionText} \t${chalk.hex(logger.MUTED)(this.description)}`);
+    const description = chalk.hex(logger.MUTED)(this.description);
+
+    let defaultValue = '';
+    if (this.default !== undefined) defaultValue = chalk.hex(logger.MUTED)(` ~ Default: ${this.default || 'false'}`);
+
+    logger.default(`${optionText} \t${description}${defaultValue}`);
   }
 }
