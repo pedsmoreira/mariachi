@@ -62,6 +62,14 @@ export default class LineCollection {
     return this._proxy;
   }
 
+  trailing(str: string): LineCollectionType {
+    // $FlowFixMe
+    this._proxy.rightPad(str).last.rightUnpad(str);
+
+    // $FlowFixMe
+    return this._proxy;
+  }
+
   // $FlowFixMe
   *[Symbol.iterator]() {
     yield* this.lines;
