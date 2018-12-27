@@ -7,15 +7,13 @@ export default class GeneratorGenerator extends Generator {
     return `battlecry/generators/${this.args.name}/`;
   }
 
-  @command('name')
-  @description('Create a new generator with sample files')
+  @command({ args: 'name', description: 'Create a new generator with sample files' })
   generate() {
     this.template('*.generator.js').saveAs(this.folder, this.args.name);
     this.templates('templates/**').forEach(file => file.saveAs(`${this.folder}templates/`));
   }
 
-  @command('name')
-  @description('Destroy an existing generator')
+  @command({ args: 'name', description: 'Destroy an existing generator' })
   destroy() {
     this.delete(this.folder);
   }

@@ -16,14 +16,7 @@ export function command(targetOrProperties: any, methodName: string, descriptor:
 
   // @command('name') - with params
   return (target: any, methodName: string, descriptor: any) => {
-    config(target, methodName).args = targetOrProperties;
-    return descriptor;
-  };
-}
-
-export function description(description: any) {
-  return (target: any, methodName: string, descriptor: any) => {
-    config(target, methodName).description = description;
+    Object.assign(config(target, methodName), targetOrProperties);
     return descriptor;
   };
 }
