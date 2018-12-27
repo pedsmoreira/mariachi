@@ -30,3 +30,5 @@ export function option(name: any, details: Object = {}) {
     return descriptor;
   };
 }
+
+command.option = option;

@@ -16,7 +16,7 @@ export { default as Line } from './classes/Line';
 export { default as LineCollection } from './classes/LineCollection';
 export { default as Battlecry } from './classes/Battlecry';
 
-export { command, description, option } from './helpers/decorators';
+export { command, option } from './helpers/decorators';
 export { default as dd } from './helpers/dd';
 export { default as logger } from './helpers/logger';
 export { default as memoize } from './helpers/memoize';

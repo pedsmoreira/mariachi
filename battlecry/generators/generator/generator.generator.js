@@ -1,4 +1,4 @@
-import { Generator, command, description, option } from 'battlecry';
+import { Generator, command } from 'battlecry';
 
 export default class GeneratorGenerator extends Generator {
   compatibility = '1.x';
