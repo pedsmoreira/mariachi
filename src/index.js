@@ -1,40 +1,25 @@
 // @flow
 
-import ArgBuilder from './classes/ArgBuilder';
-import File from './classes/File';
-import Generator from './classes/Generator';
-import GeneratorMethod from './classes/GeneratorMethod';
-import OptionBuilder from './classes/OptionBuilder';
-import Line from './classes/Line';
-import LineCollection from './classes/LineCollection';
-import Battlecry from './classes/Battlecry';
-
-import dd from './helpers/dd';
-import logger from './helpers/logger';
-import memoize from './helpers/memoize';
-import indentation from './helpers/indentation';
-import spaces from './helpers/spaces';
-import withMethodMissing from './helpers/withMethodMissing';
-
 import { EOL } from 'os';
-import { replacePatterns, configure } from 'battle-casex';
+import { configure } from 'battle-casex';
 
 configure({ eol: EOL });
 
-export {
-  ArgBuilder,
-  File,
-  Generator,
-  GeneratorMethod,
-  OptionBuilder,
-  Line,
-  LineCollection,
-  Battlecry,
-  dd,
-  logger,
-  memoize,
-  indentation,
-  spaces,
-  withMethodMissing,
-  replacePatterns
-};
+export { replacePatterns } from 'battle-casex';
+
+export { default as ArgBuilder } from './classes/ArgBuilder';
+export { default as File } from './classes/File';
+export { default as Generator } from './classes/Generator';
+export { default as GeneratorMethod } from './classes/GeneratorMethod';
+export { default as OptionBuilder } from './classes/OptionBuilder';
+export { default as Line } from './classes/Line';
+export { default as LineCollection } from './classes/LineCollection';
+export { default as Battlecry } from './classes/Battlecry';
+
+export { command, description, option } from './helpers/decorators';
+export { default as dd } from './helpers/dd';
+export { default as logger } from './helpers/logger';
+export { default as memoize } from './helpers/memoize';
+export { default as indentation } from './helpers/indentation';
+export { default as spaces } from './helpers/spaces';
+export { default as withMethodMissing } from './helpers/withMethodMissing';

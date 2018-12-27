@@ -1,7 +1,7 @@
 // @flow
 
-export default function memoize(target: any, propertyKey: string, descriptor: Object) {
-  const originalMethod = descriptor.get;
+export default function memoize(target: any, methodName: string, descriptor: PropertyDescriptor<*>) {
+  const originalMethod: any = descriptor.get;
   let memoizedValue;
 
   descriptor.get = function() {
