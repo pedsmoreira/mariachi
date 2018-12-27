@@ -1,16 +1,12 @@
 // @flow
 
-import { Generator } from 'battlecry';
+import { Generator, command, description, option } from 'battlecry';
 
 export default class SetupGenerator extends Generator {
   compatibility = '1.x';
 
-  config = {
-    generate: {
-      description: "Add a battlecry-setup.js file to your project's battlecry folder"
-    }
-  };
-
+  @command
+  @description("Add a battlecry-setup.js file to your project's battlecry folder")
   generate() {
     this.template('battlecry-setup.js').saveAs('battlecry/');
   }
