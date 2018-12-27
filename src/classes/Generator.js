@@ -127,7 +127,6 @@ export default class Generator {
   }
 
   setOptions(options: Options): this {
-    console.log(options);
     this.options = options;
     return this;
   }
