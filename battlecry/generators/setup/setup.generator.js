@@ -1,5 +1,3 @@
-// @flow
-
 import { Generator, command, description, option } from 'battlecry';
 
 export default class SetupGenerator extends Generator {

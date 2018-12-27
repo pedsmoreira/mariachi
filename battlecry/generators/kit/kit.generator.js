@@ -1,6 +1,5 @@
-// @flow
-
 import { Generator, command, description, option } from 'battlecry';
+import GitDownload from './GitDownload';
 
 export default class KitGenerator extends Generator {
   compatibility = '1.x';
@@ -9,7 +8,6 @@ export default class KitGenerator extends Generator {
   @option('dir', { description: 'The repository directory where the generators are located', arg: 'required' })
   @description('Download one or more generators from GitHub')
   download() {
-    // $FlowFixMe
     return new GitDownload(this.args.repository, this.options.dir).handle();
   }
 }
