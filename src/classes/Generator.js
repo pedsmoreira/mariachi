@@ -60,11 +60,13 @@ export default class Generator {
       const method: Function = this[methodName];
       if (!method) this.throwMethodNotImplemented(methodName);
 
+      // $FlowFixMe
+      const generatorMethod: GeneratorMethod = this.methods.find(method => method.name === methodName);
+
       logger.emptyLine();
       logger.success(`🥁  Playing: ${methodName} ${this.name}`);
       logger.addIndentation();
 
-      this.setDefaultOptions(this.methods[method].defaultOptions);
       const response = method.bind(this)();
       if (response) await response;
 
@@ -125,12 +127,9 @@ export default class Generator {
   }
 
   setOptions(options: Options): this {
+    console.log(options);
     this.options = options;
     return this;
-  }
-
-  setDefaultOptions(options: Options): this {
-    return this.setOptions({ ...options, ...this.options });
   }
 
   setArgs(args: Args): this {

@@ -11,7 +11,7 @@ export default class ArgBuilder {
     this.variadic = text.includes('...');
   }
 
-  build() {
+  get signature() {
     let response = this.name;
 
     if (this.variadic) response += '...';

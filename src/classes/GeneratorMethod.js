@@ -38,7 +38,7 @@ export default class GeneratorMethod {
 
     return args
       .split(' ')
-      .map(arg => new ArgBuilder(arg).build())
+      .map(arg => new ArgBuilder(arg).signature)
       .join(' ');
   }
 
@@ -48,18 +48,6 @@ export default class GeneratorMethod {
 
   get optionBuilders(): OptionBuilder[] {
     return Object.keys(this.options).map(name => new OptionBuilder(name, this.options[name]));
-  }
-
-  get defaultOptions() {
-    const defaults = {};
-
-    const options = this.config.options || {};
-    Object.keys(options).forEach(name => {
-      const option = this.options[name];
-      if (option.default !== undefined) defaults[name] = option.default;
-    });
-
-    return defaults;
   }
 
   get command(): string {
@@ -85,7 +73,7 @@ export default class GeneratorMethod {
       .command(this.command, '', { noHelp: true })
       .action(this.action);
 
-    this.optionBuilders.forEach(option => cmd.option(option.build(), option.description));
+    this.optionBuilders.forEach(option => cmd.option(option.flags, option.description, option.defaultArg));
   }
 
   help(): void {
