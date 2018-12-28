@@ -400,6 +400,10 @@ describe('File', () => {
     });
   });
 
+  describe('#move', () => {});
+
+  describe('#rename', () => {});
+
   describe('#remove', () => {
     it('removes line of the first occurrence', () => {
       textFile.remove('__name__', 'a');

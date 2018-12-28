@@ -1,4 +1,4 @@
-import { command } from 'battlecry';
+import { command, description } from 'battlecry';
 
 describe('@command', () => {
   describe('without args', () => {
@@ -18,7 +18,7 @@ describe('@command', () => {
 
 describe('with args', () => {
   class TestGenerator {
-    @command('name phone? ...others')
+    @command({ args: 'name phone? ...others', description: 'Foo bar' })
     test() {}
   }
 
@@ -26,7 +26,8 @@ describe('with args', () => {
     const generator = new TestGenerator();
     expect(generator.config).toEqual({
       test: {
-        args: 'name phone? ...others'
+        args: 'name phone? ...others',
+        description: 'Foo bar'
       }
     });
   });

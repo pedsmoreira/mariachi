@@ -1,10 +1,9 @@
-import { command, description, option } from 'battlecry';
+import { command } from 'battlecry';
 
 describe('decorators', () => {
   class TestGenerator {
-    @command('name phone? ...others')
-    @description('foo bar')
-    @option('test')
+    @command({ args: 'name phone? ...others', description: 'foo bar' })
+    @command.option('test')
     test() {}
   }
 

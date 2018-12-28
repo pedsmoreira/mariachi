@@ -1,10 +1,10 @@
-import { command, option } from 'battlecry';
+import { command } from 'battlecry';
 
 describe('@option', () => {
   describe('without details', () => {
     class TestGenerator {
       @command
-      @option('path')
+      @command.option('path')
       test() {}
     }
 
@@ -24,7 +24,7 @@ describe('@option', () => {
 describe('with details', () => {
   class TestGenerator {
     @command
-    @option('path', { alias: 'j' })
+    @command.option('path', { alias: 'j' })
     test() {}
   }
 
