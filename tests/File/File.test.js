@@ -1,4 +1,4 @@
-import { File } from 'battlecry';
+import { File, Line, LineCollection } from 'battlecry';
 import rimraf from 'rimraf';
 import { EOL } from 'os';
 import fs from 'fs';
@@ -224,27 +224,21 @@ describe('File', () => {
    * Text Helpers
    */
 
-  describe('.joinLines', () => {
-    it('returns one line if only one item in the array', () => {
-      expect(File.joinLines(['a'])).toEqual('a');
+  describe('#read', () => {
+    describe('file exists', () => {
+      it('sets text from file', () => {
+        const file = new File(`${fixturesPath}/a.txt`);
+        file.read();
+        expect(file.text).toEqual('content on file a');
+      });
     });
 
-    it('returns lines joined by \r\n', () => {
-      expect(File.joinLines(['a', 'b', 'c'])).toEqual(`a${EOL}b${EOL}c`);
-    });
-  });
-
-  describe('#readText', () => {
-    it('sets text if file exists', () => {
-      const file = new File(`${fixturesPath}/a.txt`);
-      file.readText();
-      expect(file.text).toEqual('content on file a');
-    });
-
-    it('assigns an empty string to text if the file doesnt exist', () => {
-      const file = new File(`file-that-does-not-exist.txt`);
-      file.readText();
-      expect(file.text).toEqual('');
+    describe('file does no exist', () => {
+      it('assigns an empty string to text', () => {
+        const file = new File(`file-that-does-not-exist.txt`);
+        file.read();
+        expect(file.text).toEqual('');
+      });
     });
   });
 
@@ -254,27 +248,39 @@ describe('File', () => {
       expect(() => file.text).toThrowError();
     });
 
-    it('reads text if no text has been assigned yet', () => {
-      const file = new File(`${fixturesPath}/a.txt`);
-      expect(file.text).toEqual('content on file a');
+    it('returns existing text', () => {
+      const file = new File();
+      file.lines = ['first', 'second'];
+      expect(file.text).toEqual(`first${EOL}second`);
+    });
+  });
+
+  describe('#text=', () => {
+    it('sets lines', () => {
+      textFile.text = `one\ntwo`;
+      expect(textFile.textArray).toEqual(['one', 'two']);
     });
 
-    it('returns existing text', () => {
-      const file = new File(`${fixturesPath}/a.txt`);
-      expect(file.__text).toBeUndefined();
-      file.text = 'set some text';
-      expect(file.text).toEqual('set some text');
+    it('works with \r\n and \n', () => {
+      textFile.text = 'a\nb\r\nc';
+      expect(textFile.textArray).toEqual(['a', 'b', 'c']);
+    });
+  });
+
+  describe('#line', () => {
+    it('returns the line at a given index', () => {
+      expect(textFile.line(1).text).toEqual('b');
+    });
+
+    it('returns null if the line does not exist', () => {
+      expect(textFile.line(10)).toBeUndefined();
     });
   });
 
   describe('#lines', () => {
-    it('returns text as an array broken by line', () => {
-      expect(textFile.lines).toEqual(['a', 'b', 'c', 'a']);
-    });
-
-    it('works with only \n', () => {
-      textFile.text = 'a\nb\r\nc';
-      expect(textFile.lines).toEqual(['a', 'b', 'c']);
+    it('returns lines', () => {
+      textFile.lines = ['one', 'two'];
+      expect(textFile.textArray).toEqual(['one', 'two']);
     });
 
     it('returns an empty array if text is empty', () => {
@@ -283,60 +289,31 @@ describe('File', () => {
     });
   });
 
-  describe('#lines=', () => {
-    it('sets text joined by \r\n', () => {
-      textFile.lines = [1, 'b', 3];
-      expect(textFile.text).toEqual(`1${EOL}b${EOL}3`);
-    });
-  });
-
-  describe('#replaceText', () => {
-    it('replaces first text occurrence', () => {
-      textFile.replaceText('a', '123456');
-      expect(textFile.lines).toEqual(['123456', 'b', 'c', 'a']);
-    });
-  });
-
-  describe('#replaceAllText', () => {
-    it('replaces all occurrences of a text', () => {
-      textFile.replaceAllText('a', '123456');
-      expect(textFile.lines).toEqual(['123456', 'b', 'c', '123456']);
-    });
-  });
-
   describe('#replaceNames', () => {
-    it('replaces all occurrences casex naming', () => {
+    it('replaces all occurrences battle-casex', () => {
       textFile.prepend('__name__');
       textFile.append('__na-me__');
 
       textFile.replaceNames('cool-name');
-      expect(textFile.lines).toEqual(['coolname', 'a', 'b', 'c', 'a', 'cool-name']);
+      expect(textFile.textArray).toEqual(['coolname', 'a', 'b', 'c', 'a', 'cool-name']);
     });
   });
 
-  describe('#search', () => {
-    it('returns line number of the first encounter', () => {
-      expect(textFile.search('a')).toBe(0);
-      expect(textFile.search('b')).toBe(1);
-    });
-
-    it('returns search if a number', () => {
-      expect(textFile.search(101)).toEqual(101);
+  describe('#find', () => {
+    it('returns first matching occurrence', () => {
+      expect(textFile.find('a').index).toBe(0);
+      expect(textFile.find('b').index).toBe(1);
     });
 
     it('throws an error when nothing is found', () => {
-      expect(() => textFile.search('text-not-in-file')).toThrowError();
+      expect(() => textFile.find('text-not-in-file')).toThrowError();
     });
   });
 
   describe('#last', () => {
-    it('returns line number of the last encounter', () => {
-      expect(textFile.last('a')).toBe(3);
-      expect(textFile.last('b')).toBe(1);
-    });
-
-    it('returns search if a number', () => {
-      expect(textFile.last(101)).toEqual(101);
+    it('returns last matching line', () => {
+      expect(textFile.last('a').index).toBe(3);
+      expect(textFile.last('b').index).toBe(1);
     });
 
     it('throws an error when nothing is found', () => {
@@ -344,77 +321,74 @@ describe('File', () => {
     });
   });
 
-  describe('#before', () => {
-    it('adds line with content before first occurrence', () => {
-      textFile.before('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['coolName', 'a', 'b', 'c', 'a']);
+  describe('#all', () => {
+    it('returns all matching lines', () => {
+      expect(textFile.all('a').length).toBe(2);
     });
   });
 
-  describe('#beforeLast', () => {
-    it('adds line with content before last occurence', () => {
-      textFile.beforeLast('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['a', 'b', 'c', 'coolName', 'a']);
+  describe('#consecutive', () => {
+    it('returns all matching lines', () => {
+      textFile.lines = ['start', 'import a', 'import b', 'import c', 'end'];
+      expect(textFile.consecutive('import ').textArray).toEqual(['import a', 'import b', 'import c']);
     });
   });
 
-  describe('#after', () => {
-    it('adds line with content after first occurrence', () => {
-      textFile.after('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['a', 'coolName', 'b', 'c', 'a']);
+  describe('#add', () => {
+    it('returns a collection with new lines', () => {
+      const response = textFile.add(1, ['new 1', 'new 2']);
+      expect(response).toBeInstanceOf(LineCollection);
+      expect(response.length).toBe(2);
     });
-  });
 
-  describe('#afterLast', () => {
-    it('adds line with content after last occurence', () => {
-      textFile.afterLast('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['a', 'b', 'c', 'a', 'coolName']);
+    it('works with a single string', () => {
+      const response = textFile.add(1, 'new 1');
+      expect(response).toBeInstanceOf(LineCollection);
+      expect(response.length).toBe(1);
+    });
+
+    describe('given texts', () => {
+      it('adds lines at given index', () => {
+        textFile.add(1, ['new 1', 'new 2']);
+        expect(textFile.textArray).toEqual(['a', 'new 1', 'new 2', 'b', 'c', 'a']);
+      });
+    });
+
+    describe('given lines', () => {
+      it('adds lines at given index', () => {
+        textFile.add(1, [new Line(textFile, 'new 1')]);
+        expect(textFile.textArray).toEqual(['a', 'new 1', 'b', 'c', 'a']);
+      });
     });
   });
 
   describe('#prepend', () => {
-    it('adds line with content to the beginning of the file', () => {
-      textFile.prepend('__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['coolName', 'a', 'b', 'c', 'a']);
+    it('adds line at the beginning', () => {
+      textFile.prepend('new line');
+      expect(textFile.textArray).toEqual(['new line', 'a', 'b', 'c', 'a']);
     });
   });
 
   describe('#append', () => {
-    it('adds line with content to the end of the file', () => {
-      textFile.append('__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['a', 'b', 'c', 'a', 'coolName']);
+    it('adds line at the end', () => {
+      textFile.append('new line');
+      expect(textFile.textArray).toEqual(['a', 'b', 'c', 'a', 'new line']);
     });
   });
-
-  describe('#replace', () => {
-    it('replaces first occurrence with new content', () => {
-      textFile.replace('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['coolName', 'b', 'c', 'a']);
-    });
-  });
-
-  describe('#replaceLast', () => {
-    it('replaces last occurrence with new content', () => {
-      textFile.replaceLast('a', '__naMe__', 'cool-name');
-      expect(textFile.lines).toEqual(['a', 'b', 'c', 'coolName']);
-    });
-  });
-
-  describe('#move', () => {});
-
-  describe('#rename', () => {});
 
   describe('#remove', () => {
-    it('removes line of the first occurrence', () => {
-      textFile.remove('__name__', 'a');
-      expect(textFile.lines).toEqual(['b', 'c', 'a']);
+    describe('given a number', () => {
+      it('removes the line', () => {
+        textFile.remove(1);
+        expect(textFile.textArray).toEqual(['a', 'c', 'a']);
+      });
     });
-  });
 
-  describe('#removeLast', () => {
-    it('removes line of the last occurrence', () => {
-      textFile.removeLast('__name__', 'a');
-      expect(textFile.lines).toEqual(['a', 'b', 'c']);
+    describe('given a line', () => {
+      it('removes the line', () => {
+        textFile.remove(textFile.lines.first);
+        expect(textFile.textArray).toEqual(['b', 'c', 'a']);
+      });
     });
   });
 });

@@ -120,10 +120,6 @@ export default class File {
    * Text helpers
    */
 
-  static joinLines(lines: string[]): string {
-    return joinLines(lines);
-  }
-
   read() {
     this.text = this.exists ? fs.readFileSync(this.path, 'utf8') : '';
   }
@@ -132,12 +128,16 @@ export default class File {
     return joinLines(this.lines.map(line => line.text));
   }
 
+  get textArray(): string[] {
+    return this.lines.textArray;
+  }
+
   set text(text: string): void {
     this.lines = text.split(LINE_BREAK);
   }
 
   line(index: number): Line {
-    return this._lines.lines[index];
+    return this._lines[index];
   }
 
   get lines(): LineCollectionType {
@@ -152,8 +152,17 @@ export default class File {
     this.add(0, texts);
   }
 
+  replaceNames(name: string): this {
+    this.text = replacePatterns(this.text, name);
+    return this;
+  }
+
   find(search: string, name?: string): Line {
     return this.all(search, name, { limit: 1 })[0] || this.throwSearchNotFound(search);
+  }
+
+  first(search: string, name?: string): Line {
+    return this.find(search, name);
   }
 
   last(search: string, name?: string): Line {

@@ -75,7 +75,7 @@ export default class LineCollection {
   }
 
   __methodMissing__(name: any, args: any[]) {
-    const isArrayProperty = !!Array.prototype[name];
+    const isArrayProperty = this.lines[name] !== undefined;
     return isArrayProperty ? this._callArrayProperty(name, args) : this._callEachInArrayMethod(name, args);
   }
 
@@ -100,10 +100,17 @@ export default class LineCollection {
     const number = parseInt(name, 10);
     const isNumber = !isNaN(number);
 
+    const arrayProperty = this.lines[name];
+    if (arrayProperty !== undefined && typeof arrayProperty !== 'function') return arrayProperty;
+
     return !isNumber ? defaultFn : this.lines[name];
   }
 
   toString() {
     return this.lines;
+  }
+
+  get textArray() {
+    return this.lines.map(line => line.text);
   }
 }
