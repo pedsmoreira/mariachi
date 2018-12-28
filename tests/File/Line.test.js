@@ -1,16 +1,18 @@
+import { Line } from 'battlecry';
+
 describe('Line', () => {
   describe('#indentation', () => {
     it('returns empty when there is no indentation', () => {
-      expect(indentation('')).toEqual('');
-      expect(indentation('foo-bar')).toEqual('');
+      expect(new Line(null, '').indentation).toEqual('');
+      expect(new Line(null, 'foo-bar').indentation).toEqual('');
     });
 
     it('detects white spaces', () => {
-      expect(indentation('  foo-bar')).toEqual('  ');
+      expect(new Line(null, '  foo-bar').indentation).toEqual('  ');
     });
 
     it('detects tabs', () => {
-      expect(indentation('\tfoo-bar')).toEqual('\t');
+      expect(new Line(null, '\tfoo-bar').indentation).toEqual('\t');
     });
   });
 });
