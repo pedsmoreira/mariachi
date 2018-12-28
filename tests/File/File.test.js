@@ -289,16 +289,6 @@ describe('File', () => {
     });
   });
 
-  describe('#replaceNames', () => {
-    it('replaces all occurrences battle-casex', () => {
-      textFile.prepend('__name__');
-      textFile.append('__na-me__');
-
-      textFile.replaceNames('cool-name');
-      expect(textFile.textArray).toEqual(['coolname', 'a', 'b', 'c', 'a', 'cool-name']);
-    });
-  });
-
   describe('#find', () => {
     it('returns first matching occurrence', () => {
       expect(textFile.find('a').index).toBe(0);

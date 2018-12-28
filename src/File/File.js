@@ -152,11 +152,6 @@ export default class File {
     this.add(0, texts);
   }
 
-  replaceNames(name: string): this {
-    this.text = replacePatterns(this.text, name);
-    return this;
-  }
-
   find(search: string, name?: string): Line {
     return this.all(search, name, { limit: 1 })[0] || this.throwSearchNotFound(search);
   }
