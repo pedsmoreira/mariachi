@@ -1,8 +1,7 @@
 // @flow
 
-import withMethodMissing from '../helpers/withMethodMissing';
-
 import Line from './Line';
+import withMethodMissing from './withMethodMissing';
 
 export type LineCollectionType = Line & Array<Line> & LineCollection;
 

@@ -11,10 +11,9 @@ import semver from 'semver';
 
 import File from './File';
 import Battlecry from './Battlecry';
-import GeneratorMethod, { type MethodConfig } from './GeneratorMethod';
+import Command, { type CommandConfig } from './Command';
 
-import dd from '../helpers/dd';
-import logger from '../helpers/logger';
+import { dd, logger } from './helpers';
 
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
@@ -31,19 +30,19 @@ export default class Generator {
   path: string;
   battlecry: Battlecry;
   compatibility: string | string[];
-  config: { [method: string]: MethodConfig };
+  config: { [method: string]: CommandConfig };
 
   get basename() {
     return basename(this.path);
   }
 
-  get methods(): GeneratorMethod[] {
-    return Object.keys(this.config || {}).map(method => new GeneratorMethod(this, method));
+  get commands(): Command[] {
+    return Object.keys(this.config || {}).map(method => new Command(this, method));
   }
 
   register(): void {
     this.logRegistrationWarnings();
-    this.methods.forEach(method => method.register());
+    this.commands.forEach(command => command.register());
   }
 
   get compatible() {
@@ -60,8 +59,8 @@ export default class Generator {
       const method: Function = this[methodName];
       if (!method) this.throwMethodNotImplemented(methodName);
 
-      // $FlowFixMe
-      const generatorMethod: GeneratorMethod = this.methods.find(method => method.name === methodName);
+      const command = this.commands.find(command => command.name === methodName);
+      if (!command) this.throwMethodNotRegistered(methodName);
 
       logger.emptyLine();
       logger.success(`🥁  Playing: ${methodName} ${this.name}`);
@@ -175,7 +174,7 @@ export default class Generator {
 
     logger.addIndentation();
     this.logRegistrationWarnings();
-    this.methods.forEach(method => method.help());
+    this.commands.forEach(method => method.help());
     logger.removeIndentation();
   }
 
@@ -184,7 +183,7 @@ export default class Generator {
    */
 
   logRegistrationWarnings() {
-    if (!this.methods.length) return this.logWarn('Empty', 'No methods in config');
+    if (!this.commands.length) return this.logWarn('Empty', 'No methods in config');
 
     if (!this.compatibility) {
       return this.logWarn('Compability check skipped', `No compabitility provided`);
@@ -210,5 +209,11 @@ export default class Generator {
 
   throwMethodNotImplemented(method: string): void {
     throw new Error(`Method ${method} not implemented on generator ${this.constructor.name}`);
+  }
+
+  throwMethodNotRegistered(method: string): void {
+    throw new Error(
+      `Method ${method} is not registered. You can register your command using @command or adding it to config = {}`
+    );
   }
 }

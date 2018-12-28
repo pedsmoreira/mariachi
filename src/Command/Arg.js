@@ -1,6 +1,6 @@
 // @flow
 
-export default class ArgBuilder {
+export default class Arg {
   name: string;
   optional: boolean;
   variadic: boolean;
@@ -11,7 +11,7 @@ export default class ArgBuilder {
     this.variadic = text.includes('...');
   }
 
-  get signature() {
+  get commanderSignature() {
     let response = this.name;
 
     if (this.variadic) response += '...';

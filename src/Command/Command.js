@@ -3,19 +3,19 @@
 import program from 'commander';
 import chalk from 'chalk';
 
-import Generator from './Generator';
-import OptionBuilder, { type OptionProperties } from './OptionBuilder';
-import ArgBuilder from './ArgBuilder';
+import Generator from '../Generator';
+import { logger } from '../helpers';
 
-import logger from '../helpers/logger';
+import Option, { type OptionProps } from './Option';
+import CommandArg from './Arg';
 
-export type MethodConfig = {
-  options?: OptionProperties,
+export type CommandConfig = {
   args?: string,
+  options?: { [string]: OptionProps },
   description?: string
 };
 
-export default class GeneratorMethod {
+export default class Command {
   generator: Generator;
   name: string;
 
@@ -28,33 +28,30 @@ export default class GeneratorMethod {
     return this.generator.battlecry.alias(this.name);
   }
 
-  get config(): MethodConfig {
+  get config(): CommandConfig {
     return this.generator.config[this.name];
   }
 
-  get argBuilders(): string {
+  get options(): Option[] {
+    const options = this.config.options || {};
+    return Object.keys(options).map(name => new Option(name, options[name]));
+  }
+
+  get commanderArgs(): string {
     const args = this.config.args;
     if (!args) return '';
 
     return args
       .split(' ')
-      .map(arg => new ArgBuilder(arg).signature)
+      .map(arg => new CommandArg(arg).commanderSignature)
       .join(' ');
   }
 
-  get options() {
-    return this.config.options || {};
+  get commanderInstruction(): string {
+    return `${this.name}-${this.generator.name} ${this.commanderArgs}`;
   }
 
-  get optionBuilders(): OptionBuilder[] {
-    return Object.keys(this.options).map(name => new OptionBuilder(name, this.options[name]));
-  }
-
-  get command(): string {
-    return `${this.name}-${this.generator.name} ${this.argBuilders}`;
-  }
-
-  get action(): Function {
+  get commanderAction(): Function {
     const method = this;
 
     return function() {
@@ -70,17 +67,19 @@ export default class GeneratorMethod {
   register(): void {
     const cmd = program
       // $FlowFixMe
-      .command(this.command, '', { noHelp: true })
-      .action(this.action);
+      .command(this.commanderInstruction, '', { noHelp: true })
+      .action(this.commanderAction);
 
-    this.optionBuilders.forEach(option => cmd.option(option.flags, option.description, option.defaultArg));
+    this.options.forEach(option => cmd.option(option.commanderFlags, option.description, option.defaultArg));
   }
 
   help(): void {
     logger.emptyLine();
     this.helpTitle();
 
-    this.optionBuilders.forEach(option => option.help());
+    logger.addIndentation();
+    this.options.forEach(option => option.help());
+    logger.removeIndentation();
   }
 
   helpTitle() {

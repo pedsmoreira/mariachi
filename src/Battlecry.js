@@ -5,12 +5,11 @@ import { basename } from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 
-import pkg from '../../package.json';
+import pkg from '../package.json';
 
 import Generator from './Generator';
-
-import glob, { defaultOptions as defaultGlobOptions } from '../helpers/glob';
-import logger from '../helpers/logger';
+import glob, { defaultGlobOptions } from './File/glob';
+import { logger } from './helpers';
 
 type NamedArgv = {
   node: string,
@@ -165,7 +164,6 @@ export default class Battlecry {
     this.register();
 
     program
-      // $FlowFixMe
       .version(this.version)
       .usage('<method> <generator> [args] [options]')
       .option('-A, --about', 'output info about Battlecry contributors')
@@ -175,7 +173,6 @@ export default class Battlecry {
     if (!this.executed) {
       program.outputHelp();
 
-      // $FlowFixMe
       logger.warn('Command not found. Check the commands available above');
       logger.emptyLine();
     }

@@ -2,8 +2,6 @@
 
 import { replacePatterns } from 'battle-casex';
 
-import indentation from '../helpers/indentation';
-
 import File from './File';
 import LineCollection, { type LineCollectionType } from './LineCollection';
 
@@ -162,7 +160,8 @@ export default class Line {
   }
 
   get indentation() {
-    return indentation(this.text);
+    // $FlowFixMe
+    return this.text.match(/^[\s]*/g)[0];
   }
 
   replaceIndentation(str?: string) {

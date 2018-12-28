@@ -1,7 +1,6 @@
 // @flow
 
 import chalk from 'chalk';
-import spaces from './spaces';
 
 const INDENTATION = 3;
 
@@ -24,8 +23,10 @@ class Log {
   }
 
   log(chalker: Function, message: string) {
+    const spaces = new Array(this.indentation).fill(' ').join('');
+
     this.hasEmptyLine = false;
-    console.log(chalker(spaces(this.indentation, message)));
+    console.log(chalker(`${spaces}${message}`));
   }
 
   default(message: string) {

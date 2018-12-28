@@ -2,18 +2,16 @@
 
 import chalk from 'chalk';
 
-import logger from '../helpers/logger';
+import { logger } from '../helpers';
 
-export type OptionProperties = {
-  [name: string]: {
-    description: string,
-    arg?: 'required' | 'optional',
-    alias?: string,
-    default?: string
-  }
+export type OptionProps = {
+  description: string,
+  alias?: string,
+  arg?: 'required' | 'optional',
+  defaultArg?: string
 };
 
-export default class OptionBuilder {
+export default class Option {
   name: string;
   description: string;
   alias: string;
@@ -35,12 +33,12 @@ export default class OptionBuilder {
     return '';
   }
 
-  get flags() {
+  get commanderFlags() {
     return `-${this.alias}, --${this.name} ${this.commanderArg}`;
   }
 
   help() {
-    let optionText = chalk.hex(logger.BRASIL_BLUE)(`    -${this.alias} --${this.name}`);
+    let optionText = chalk.hex(logger.BRASIL_BLUE)(`-${this.alias} --${this.name}`);
 
     if (this.arg === 'required') {
       optionText += chalk.cyanBright(` value`);

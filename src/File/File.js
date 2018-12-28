@@ -7,8 +7,9 @@ import { EOL } from 'os';
 import isBinaryFile from 'isbinaryfile';
 import { replacePatterns, joinLines } from 'battle-casex';
 
-import glob from '../helpers/glob';
-import logger from '../helpers/logger';
+import { logger } from '../helpers';
+
+import glob from './glob';
 
 import Line from './Line';
 import LineCollection, { type LineCollectionType } from './LineCollection';

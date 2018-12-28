@@ -1,6 +1,6 @@
 // @flow
 
-import File from '../classes/File';
+import File from '../File';
 
 import logger from './logger';
 
