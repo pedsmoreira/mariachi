@@ -15,18 +15,41 @@ describe('Line', () => {
   });
 
   describe('#name', () => {
-    it('replaces all __name__ pattern occurrences', () => {});
+    it('replaces all __name__ pattern occurrences', () => {
+      const line = new Line(null, '__name__ _Name_s');
+      expect(line.name('foo').text).toEqual('foo Foos');
+    });
   });
 
   describe('#replace', () => {
-    describe('given a string', () => {});
+    describe('given a string', () => {
+      it('replaces the first occurrence', () => {
+        const line = new Line(null, 'John Doe and Maria Doe');
+        expect(line.replace('Doe', 'Smith').text).toEqual('John Smith and Maria Doe');
+      });
+    });
 
-    describe('given a regex', () => {});
+    describe('given a regex', () => {
+      it('replaces according to the regex', () => {
+        const line = new Line(null, 'John Doe and Maria Doe');
+        expect(line.replace(/Doe/g, 'Smith').text).toEqual('John Smith and Maria Smith');
+      });
+    });
   });
 
-  describe('#before', () => {});
+  describe('#before', () => {
+    it('adds line before the current one', () => {
+      textFile.lines.last.before('new');
+      expect(textFile.textArray).toEqual(['a', 'b', 'c', 'new', 'a']);
+    });
+  });
 
-  describe('#after', () => {});
+  describe('#after', () => {
+    it('adds line after the current one', () => {
+      textFile.lines.first.after('new');
+      expect(textFile.textArray).toEqual(['a', 'new', 'b', 'c', 'a']);
+    });
+  });
 
   describe('#until', () => {});
 
