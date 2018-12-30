@@ -69,7 +69,7 @@ export default class Line {
   }
 
   prepend(text: string, name?: string): this {
-    this.text = battleCasex(`${text}${this.text}`, name);
+    this.text = `${battleCasex(text, name)}${this.text}`;
     return this;
   }
 

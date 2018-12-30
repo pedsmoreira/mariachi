@@ -53,21 +53,21 @@ describe('Line', () => {
 
   describe('#until', () => {
     describe('given a number', () => {
-      it('creates a collection from this line until the given index', () => {
+      it('returns a collection from this line until the given index', () => {
         const lines = textFile.lines[1].until(2);
         expect(lines.textArray).toEqual(['b', 'c']);
       });
     });
 
     describe('given a line', () => {
-      it('creates a collection from this line until the given one', () => {
+      it('returns a collection from this line until the given one', () => {
         const lines = textFile.lines[1].until(2);
         expect(lines.textArray).toEqual(['b', 'c']);
       });
     });
 
     describe('given a function', () => {
-      it('creates a collection from this line until the first match', () => {
+      it('returns a collection from this line until the first match', () => {
         const lines = textFile.lines[0].until(line => line.text === 'c');
         expect(lines.textArray).toEqual(['a', 'b', 'c']);
       });
@@ -81,15 +81,68 @@ describe('Line', () => {
     });
   });
 
-  describe('#untilLast', () => {});
+  describe('#untilLast', () => {
+    beforeEach(() => {
+      textFile.lines = ['a', 'a', 'b', 'a'];
+    });
 
-  describe('#untilEnclosing', () => {});
+    describe('given a string', () => {
+      it('returns a collection from this line until the last match', () => {
+        const lines = textFile.lines[0].untilLast('a');
+        expect(lines.textArray).toEqual(['a', 'a']);
+      });
+    });
 
-  describe('#prepend', () => {});
+    describe('given a function', () => {
+      it('returns a collection from this line until the last match', () => {
+        const lines = textFile.lines[0].untilLast(line => line.text === 'a');
+        expect(lines.textArray).toEqual(['a', 'a']);
+      });
+    });
+  });
 
-  describe('#leftPad', () => {});
+  describe('#untilEnclosing', () => {
+    it('returns a collection taking into account indendation', () => {
+      textFile.lines = ['a', 'function foo() {', '  bar();', '  baar();', '}', 'b'];
 
-  describe('#laftUnpad', () => {});
+      const lines = textFile.lines[1].untilEnclosing;
+      expect(lines.textArray).toEqual(['function foo() {', '  bar();', '  baar();', '}']);
+    });
+  });
+
+  describe('#prepend', () => {
+    it('adds text at the beginning', () => {
+      expect(textFile.lines.first.prepend('foo-').text).toEqual('foo-a');
+    });
+  });
+
+  describe('#leftPad', () => {
+    describe('if the given text is not there yet', () => {
+      it('adds text at the beginning', () => {
+        expect(textFile.lines.first.leftPad('foo-').text).toEqual('foo-a');
+      });
+    });
+
+    describe('if the given text is already there', () => {
+      it('does not add it again', () => {
+        expect(textFile.lines.first.leftPad('a').text).toEqual('a');
+      });
+    });
+  });
+
+  describe('#leftUnpad', () => {
+    describe('if the given text is there', () => {
+      it('removes text from the beginning', () => {
+        expect(textFile.lines.first.leftUnpad('a').text).toEqual('');
+      });
+    });
+
+    describe('if the given text is not there', () => {
+      it('does not do anything', () => {
+        expect(textFile.lines.first.leftUnpad('foo-').text).toEqual('a');
+      });
+    });
+  });
 
   describe('#append', () => {});
 
