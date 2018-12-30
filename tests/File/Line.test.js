@@ -51,7 +51,35 @@ describe('Line', () => {
     });
   });
 
-  describe('#until', () => {});
+  describe('#until', () => {
+    describe('given a number', () => {
+      it('creates a collection from this line until the given index', () => {
+        const lines = textFile.lines[1].until(2);
+        expect(lines.textArray).toEqual(['b', 'c']);
+      });
+    });
+
+    describe('given a line', () => {
+      it('creates a collection from this line until the given one', () => {
+        const lines = textFile.lines[1].until(2);
+        expect(lines.textArray).toEqual(['b', 'c']);
+      });
+    });
+
+    describe('given a function', () => {
+      it('creates a collection from this line until the first match', () => {
+        const lines = textFile.lines[0].until(line => line.text === 'c');
+        expect(lines.textArray).toEqual(['a', 'b', 'c']);
+      });
+    });
+
+    describe('given a previous line', () => {
+      it('returns the collection', () => {
+        const lines = textFile.lines[2].until(1);
+        expect(lines.textArray).toEqual(['b', 'c']);
+      });
+    });
+  });
 
   describe('#untilLast', () => {});
 

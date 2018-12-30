@@ -25,8 +25,9 @@ export default class Line {
     return this;
   }
 
-  replace(search: string | RegExp, replace: string): this {
-    this.text = this.text.replace(search, battleCasex(replace, name));
+  replace(search: string | RegExp, text: string, name?: string): this {
+    text = battleCasex(text, name);
+    this.text = this.text.replace(search, text);
     return this;
   }
 
