@@ -5,7 +5,7 @@ import mkdirp from 'mkdirp';
 import { basename, dirname, extname } from 'path';
 import { EOL } from 'os';
 import isBinaryFile from 'isbinaryfile';
-import { replacePatterns, joinLines } from 'battle-casex';
+import battleCasex from 'battle-casex';
 
 import { logger } from '../helpers';
 
@@ -17,11 +17,13 @@ import LineCollection, { type LineCollectionType } from './LineCollection';
 const LINE_BREAK = /\r?\n/;
 
 export default class File {
+  static EOL = EOL;
+
   path: string;
   _lines: LineCollectionType;
 
   constructor(path: string, name?: string) {
-    this.path = replacePatterns(path, name);
+    this.path = battleCasex(path, name);
   }
 
   existing(path: string, name?: string): File {
@@ -36,7 +38,7 @@ export default class File {
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
     const files = [];
 
-    glob(replacePatterns(pattern, name), options).forEach(path => {
+    glob(battleCasex(pattern, name), options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -80,7 +82,7 @@ export default class File {
 
   saveAs(path: string, name?: ?string): File {
     if (path.endsWith('/')) path += this.filename;
-    path = replacePatterns(path, name);
+    path = battleCasex(path, name);
 
     const creating = !fs.existsSync(path);
     mkdirp.sync(dirname(path));
@@ -88,7 +90,7 @@ export default class File {
     if (this.binary) {
       fs.createReadStream(this.path).pipe(fs.createWriteStream(path));
     } else {
-      fs.writeFileSync(path, replacePatterns(this.text, name));
+      fs.writeFileSync(path, battleCasex(this.text, name));
     }
 
     if (creating) logger.success(`✅  File created: ${path}`);
@@ -100,7 +102,7 @@ export default class File {
   move(path: string, name?: ?string): this {
     this.delete();
 
-    this.path = replacePatterns(path, name);
+    this.path = battleCasex(path, name);
     return this.save();
   }
 
@@ -125,7 +127,7 @@ export default class File {
   }
 
   get text(): string {
-    return joinLines(this.lines.map(line => line.text));
+    return this.lines.map(line => line.text).join(File.EOL);
   }
 
   get textArray(): string[] {
@@ -165,10 +167,10 @@ export default class File {
     return this.all(search, name, options)[0] || this.throwSearchNotFound(search);
   }
 
-  all(search: string, name?: string, options: Object = {}): LineCollectionType {
+  all(search: string = '', name?: string, options: Object = {}): LineCollectionType {
     const collection: LineCollectionType = new LineCollection();
 
-    search = replacePatterns(search, name);
+    search = battleCasex(search, name);
     const limit = options.limit || 1;
     const lines = options.lines || this.lines;
 

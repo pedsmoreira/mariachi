@@ -312,8 +312,16 @@ describe('File', () => {
   });
 
   describe('#all', () => {
-    it('returns all matching lines', () => {
-      expect(textFile.all('a').length).toBe(2);
+    describe('given a search', () => {
+      it('returns all matching lines', () => {
+        expect(textFile.all('a').length).toBe(2);
+      });
+    });
+
+    describe('given no search', () => {
+      it('returns all lines', () => {
+        expect(textFile.all().length).toBe(4);
+      });
     });
   });
 

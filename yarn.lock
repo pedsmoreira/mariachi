@@ -990,10 +990,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-battle-casex@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/battle-casex/-/battle-casex-0.0.1.tgz#bdf7b4c3edd94a5faf8734d3407e6c92a0ed761a"
-  integrity sha512-sjm49VPXhiKcBZxssm65Q4YnP03cZP3Hmu2TiP4XJ9BwQx7Dx1bE9o7D29GanDv9veVIqQKrR+Ff9sAo9K2K6A==
+battle-casex@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/battle-casex/-/battle-casex-1.0.0.tgz#d6d8bab78e8b30f29573b01ef59b7038cb60f57d"
+  integrity sha512-4WoHBaqGMsWb3s27OXXOCiXVT0ELFOjfB6m7+TKOMJ9pMlBxkXSsw8bj2JJdIWjSLBlPX/yjJARkLRDvcf/bLw==
   dependencies:
     casex "ˆ2.0.0 | ^3.0.0"
     pluralize "^7.0.0"

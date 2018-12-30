@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import program from 'commander';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
-import { replacePatterns } from 'battle-casex';
+import battleCasex from 'battle-casex';
 import semver from 'semver';
 
 import File from './File';
@@ -83,7 +83,7 @@ export default class Generator {
 
   file(pattern: string, name?: ?string, globOptions?: Object): File {
     const files = this.files(pattern, name, globOptions);
-    if (!files.length) throw new Error(`No file found for ${replacePatterns(pattern, name)}`);
+    if (!files.length) throw new Error(`No file found for ${battleCasex(pattern, name)}`);
 
     return files[0];
   }
@@ -93,7 +93,7 @@ export default class Generator {
   }
 
   delete(path: string, name?: string): void {
-    path = replacePatterns(path, name);
+    path = battleCasex(path, name);
     rimraf.sync(path);
     logger.success(`🔥  Path deleted: ${path}`);
   }

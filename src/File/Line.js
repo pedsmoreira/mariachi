@@ -1,6 +1,6 @@
 // @flow
 
-import { replacePatterns } from 'battle-casex';
+import battleCasex from 'battle-casex';
 
 import File from './File';
 import LineCollection, { type LineCollectionType } from './LineCollection';
@@ -21,12 +21,12 @@ export default class Line {
   }
 
   name(name: string): this {
-    this.text = replacePatterns(this.text, name);
+    this.text = battleCasex(this.text, name);
     return this;
   }
 
   replace(search: string | RegExp, replace: string): this {
-    this.text = this.text.replace(search, replacePatterns(replace, name));
+    this.text = this.text.replace(search, battleCasex(replace, name));
     return this;
   }
 
@@ -68,17 +68,17 @@ export default class Line {
   }
 
   prepend(text: string, name?: string): this {
-    this.text = replacePatterns(`${text}${this.text}`, name);
+    this.text = battleCasex(`${text}${this.text}`, name);
     return this;
   }
 
   leftPad(text: string, name?: string): this {
-    text = replacePatterns(text, name);
+    text = battleCasex(text, name);
     return this.text.startsWith(text) ? this : this.prepend(text, name);
   }
 
   leftUnpad(text: string, name?: string): this {
-    text = replacePatterns(text, name);
+    text = battleCasex(text, name);
     if (this.text.startsWith(text)) this.text = this.text.substring(text.length, this.text.length);
     return this;
   }
@@ -89,19 +89,13 @@ export default class Line {
   }
 
   rightPad(text: string, name?: string): this {
-    text = replacePatterns(text, name);
+    text = battleCasex(text, name);
     return this.text.endsWith(text) ? this : this.append(text, name);
   }
 
   rightUnpad(text: string, name?: string): this {
-    text = replacePatterns(text, name);
+    text = battleCasex(text, name);
     if (this.text.endsWith(text)) this.text = this.text.substring(0, this.text.length - text.length);
-    return this;
-  }
-
-  replace(search: string | RegExp, text: string, name?: string): this {
-    text = replacePatterns(text, name);
-    this.text = this.text.replace(search, text);
     return this;
   }
 

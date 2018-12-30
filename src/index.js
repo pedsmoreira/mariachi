@@ -1,11 +1,6 @@
 // @flow
 
-import { EOL } from 'os';
-import { configure } from 'battle-casex';
-
-configure({ eol: EOL });
-
-export { replacePatterns } from 'battle-casex';
+export { default as battleCasex } from 'battle-casex';
 
 export { default as Battlecry } from './Battlecry';
 export { default as Generator } from './Generator';
