@@ -160,15 +160,19 @@ export default class File {
   }
 
   get stub() {
-    return new Proxy(this, {
-      get: () => this.stub
-    });
+    const fn = function() {
+      return this.stub;
+    };
+
+    fn.stub = true;
+
+    return fn;
   }
 
   stubSearch(search: string, name: string) {
     let warning = `Unable to find search ${search}`;
     if (name) warning += ` with name ${name}`;
-    console.warn(warning);
+    logger.warn(warning);
 
     return this.stub;
   }
@@ -177,7 +181,7 @@ export default class File {
     return this.all(search, name, { limit: 1 })[0] || this.stubSearch(search, name);
   }
 
-  first(search: string, name?: string): Line {
+  first(search: string, name?: string) {
     return this.find(search, name);
   }
 

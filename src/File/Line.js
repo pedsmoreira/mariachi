@@ -168,7 +168,7 @@ export default class Line {
     return this.prepend(this.previous.indentation);
   }
 
-  remove() {
-    this.file.remove(this);
+  remove(amount: number = 1) {
+    this.until(this.index + amount - 1).forEach(line => this.file.remove(line));
   }
 }
