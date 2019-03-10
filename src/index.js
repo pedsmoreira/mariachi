@@ -1,5 +1,6 @@
 // @flow
 
+export { default as casex } from 'casex';
 export { default as battleCasex } from 'battle-casex';
 
 export { default as Battlecry } from './Battlecry';

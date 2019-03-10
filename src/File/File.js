@@ -71,6 +71,10 @@ export default class File {
     return dirname(this.path);
   }
 
+  get folder(): string {
+    return this.dirname.split('/').pop();
+  }
+
   get extension(): string {
     return extname(this.path);
   }
@@ -100,6 +104,7 @@ export default class File {
   }
 
   move(path: string, name?: ?string): this {
+    this.read();
     this.delete();
 
     this.path = battleCasex(path, name);
@@ -154,17 +159,35 @@ export default class File {
     this.add(0, texts);
   }
 
+  get stub() {
+    return new Proxy(this, {
+      get: () => this.stub
+    });
+  }
+
+  stubSearch(search: string, name: string) {
+    let warning = `Unable to find search ${search}`;
+    if (name) warning += ` with name ${name}`;
+    console.warn(warning);
+
+    return this.stub;
+  }
+
   find(search: string, name?: string): Line {
-    return this.all(search, name, { limit: 1 })[0] || this.throwSearchNotFound(search);
+    return this.all(search, name, { limit: 1 })[0] || this.stubSearch(search, name);
   }
 
   first(search: string, name?: string): Line {
     return this.find(search, name);
   }
 
+  replace(search: string, replacement: string) {
+    return this.find(search).replace(search, replacement);
+  }
+
   last(search: string, name?: string): Line {
     const options = { limit: 1, lines: this.lines.slice().reverse() };
-    return this.all(search, name, options)[0] || this.throwSearchNotFound(search);
+    return this.all(search, name, options)[0] || this.stubSearch(search, name);
   }
 
   all(search: string = '', name?: string, options: Object = {}): LineCollectionType {
@@ -207,9 +230,5 @@ export default class File {
   remove(line: number | Line) {
     const index = typeof line === 'number' ? line : line.index;
     this.lines.splice(index, 1);
-  }
-
-  throwSearchNotFound(search: string) {
-    throw new Error(`'${search}' not found on file ${this.path}`);
   }
 }
