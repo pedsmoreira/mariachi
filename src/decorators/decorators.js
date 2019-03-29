@@ -1,5 +1,7 @@
 // @flow
 
+import casex from 'casex';
+
 function config(target: Object, key: string) {
   if (!target.config) target.config = {};
   if (!target.config[key]) target.config[key] = {};
@@ -14,7 +16,7 @@ export function command(targetOrProperties: any, methodName: string, descriptor:
     return descriptor;
   }
 
-  // @command('name') - with params
+  // @command({ name: 'name' }) - with params
   return (target: any, methodName: string, descriptor: any) => {
     Object.assign(config(target, methodName), targetOrProperties);
     return descriptor;

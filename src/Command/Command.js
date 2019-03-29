@@ -2,6 +2,7 @@
 
 import program from 'commander';
 import chalk from 'chalk';
+import casex from 'casex';
 
 import Generator from '../Generator';
 import { logger } from '../helpers';
@@ -47,20 +48,24 @@ export default class Command {
       .join(' ');
   }
 
+  get commanderName() {
+    return this.options.name || casex(this.name, 'na-me');
+  }
+
   get commanderInstruction(): string {
-    return `${this.name}-${this.generator.name} ${this.commanderArgs}`;
+    return `${this.commanderName}-${this.generator.name} ${this.commanderArgs}`;
   }
 
   get commanderAction(): Function {
-    const method = this;
+    const command = this;
 
     return function() {
-      method.generator.battlecry.executed = true;
+      command.generator.battlecry.executed = true;
 
-      method.generator
-        .setArgsArray(method.name, this.parent.args)
+      command.generator
+        .setArgsArray(command.name, this.parent.args)
         .setOptions(this.opts())
-        .play(method.name);
+        .play(command.name);
     };
   }
 
@@ -85,7 +90,7 @@ export default class Command {
   helpTitle() {
     const { args, description } = this.config;
 
-    const name = chalk.hex(logger.BRASIL_GREEN)(this.alias || this.name);
+    const name = chalk.hex(logger.BRASIL_GREEN)(this.alias || this.commanderName);
     const generatorName = chalk.hex(logger.BRASIL_YELLOW)(this.generator.name);
     let text = `cry ${name} ${generatorName} ${args || ''}`;
 

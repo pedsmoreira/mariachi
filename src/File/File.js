@@ -2,10 +2,11 @@
 
 import fs from 'fs';
 import mkdirp from 'mkdirp';
-import { basename, dirname, extname } from 'path';
+import { resolve, basename, dirname, extname } from 'path';
 import { EOL } from 'os';
 import isBinaryFile from 'isbinaryfile';
 import battleCasex from 'battle-casex';
+const homedir = require('os').homedir();
 
 import { logger } from '../helpers';
 
@@ -35,10 +36,14 @@ export default class File {
     return file;
   }
 
+  static homedPath(path: string) {
+    return path.startsWith('~') ? homedir + path.substring(1) : path;
+  }
+
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
     const files = [];
 
-    glob(battleCasex(pattern, name), options).forEach(path => {
+    glob(battleCasex(File.homedPath(pattern), name), options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -71,6 +76,10 @@ export default class File {
     return dirname(this.path);
   }
 
+  get absolutePath() {
+    return resolve(this.path);
+  }
+
   get folder(): string {
     return this.dirname.split('/').pop();
   }
@@ -86,7 +95,7 @@ export default class File {
 
   saveAs(path: string, name?: ?string): File {
     if (path.endsWith('/')) path += this.filename;
-    path = battleCasex(path, name);
+    path = File.homedPath(battleCasex(path, name));
 
     const creating = !fs.existsSync(path);
     mkdirp.sync(dirname(path));
@@ -166,7 +175,11 @@ export default class File {
 
     fn.stub = true;
 
-    return fn;
+    return new Proxy(fn, {
+      get: () => {
+        return this.stub;
+      }
+    });
   }
 
   stubSearch(search: string, name: string) {
@@ -186,7 +199,8 @@ export default class File {
   }
 
   replace(search: string, replacement: string) {
-    return this.find(search).replace(search, replacement);
+    this.find(search).replace(search, replacement);
+    return this;
   }
 
   last(search: string, name?: string): Line {

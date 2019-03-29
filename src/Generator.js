@@ -83,7 +83,11 @@ export default class Generator {
 
   file(pattern: string, name?: ?string, globOptions?: Object): File {
     const files = this.files(pattern, name, globOptions);
-    if (!files.length) throw new Error(`No file found for ${battleCasex(pattern, name)}`);
+    if (!files.length) {
+      const path = battleCasex(pattern, name);
+      this.logWarn('File not found', `A new File instance was created for path "${path}"`);
+      return new File(path);
+    }
 
     return files[0];
   }
@@ -160,7 +164,9 @@ export default class Generator {
   exec(command: string): string | Buffer {
     logger.success(`🏃  Exec command: ${command}`);
     logger.addIndentation();
-    const result = execSync(command);
+
+    const result = execSync(command, { stdio: 'inherit' });
+
     logger.removeIndentation();
     return result;
   }
