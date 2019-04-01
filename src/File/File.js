@@ -43,7 +43,7 @@ export default class File {
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
     const files = [];
 
-    glob(battleCasex(File.homedPath(pattern), name), options).forEach(path => {
+    glob(battleCasex(this.constructor.homedPath(pattern), name), options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -51,16 +51,38 @@ export default class File {
     return files;
   }
 
+  static exists(path: string) {
+    return fs.existsSync(path);
+  }
+
+  static binary(path: string) {
+    return isBinaryFile.sync(path);
+  }
+
+  static read(path: string) {
+    return fs.readFileSync(path, 'utf8');
+  }
+
+  static delete(path: string) {
+    fs.unlinkSync(path);
+  }
+
+  static chmod(path: string, mode: number) {
+    fs.chmodSync(path, mode);
+  }
+
+  static exec(path: string) {}
+
   /*
    * File management
    */
 
   get binary(): boolean {
-    return this.exists && isBinaryFile.sync(this.path);
+    return this.exists && this.constructor.binary(this.path);
   }
 
   get exists(): boolean {
-    return fs.existsSync(this.path);
+    return this.constructor.exists(this.path);
   }
 
   get name(): string {
@@ -95,9 +117,9 @@ export default class File {
 
   saveAs(path: string, name?: ?string): File {
     if (path.endsWith('/')) path += this.filename;
-    path = File.homedPath(battleCasex(path, name));
+    path = this.constructor.homedPath(battleCasex(path, name));
 
-    const creating = !fs.existsSync(path);
+    const creating = !this.constructor.exists(path);
     mkdirp.sync(dirname(path));
 
     if (this.binary) {
@@ -111,6 +133,8 @@ export default class File {
 
     return new File(path);
   }
+
+  saveAsRemote(remote: Remote, path: string, name?: string): RemoteFile {}
 
   move(path: string, name?: ?string): this {
     this.read();
@@ -128,8 +152,17 @@ export default class File {
   }
 
   delete(): void {
-    fs.unlinkSync(this.path);
+    this.constructor.delete(this.path);
     logger.success(`🔥  File deleted: ${this.path}`);
+  }
+
+  chmod(mode: number): this {
+    this.constructor.chmod(this.path, mode);
+    return this;
+  }
+
+  exec(args?: string): this {
+    return this.constructor.exec(args);
   }
 
   /*
@@ -137,11 +170,11 @@ export default class File {
    */
 
   read() {
-    this.text = this.exists ? fs.readFileSync(this.path, 'utf8') : '';
+    this.text = this.exists ? this.constructor.read(this.path) : '';
   }
 
   get text(): string {
-    return this.lines.map(line => line.text).join(File.EOL);
+    return this.lines.map(line => line.text).join(this.constructor.EOL);
   }
 
   get textArray(): string[] {

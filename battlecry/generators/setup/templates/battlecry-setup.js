@@ -1,6 +1,6 @@
 export default function setup(battlecry) {
-  // Load additional generators
-  // battlecry.load('node_modules/battlecry-generatores-from-node-modules');
+  // Load additional strategies
+  // battlecry.load('node_modules/battlecry-strategies-from-node-modules');
   //
   // Define new aliases
   // battlecry.aliases.s = 'strike';

@@ -7,7 +7,7 @@ import chalk from 'chalk';
 
 import pkg from '../package.json';
 
-import Generator from './Generator';
+import Strategy from './Strategy';
 import glob, { defaultGlobOptions } from './File/glob';
 import { logger } from './helpers';
 
@@ -15,7 +15,7 @@ type NamedArgv = {
   node: string,
   bin: string,
   method: string,
-  generator: string,
+  strategy: string,
   rest: string[]
 };
 
@@ -26,17 +26,17 @@ export default class Battlecry {
   executed: boolean;
 
   aliases: { [alias: string]: string } = {};
-  generators: { [name: string]: Generator } = {};
+  strategies: { [name: string]: Strategy } = {};
 
   constructor(argv: string[]) {
     this.argv = argv;
 
-    const [node, bin, method, generator, ...rest] = argv;
+    const [node, bin, method, strategy, ...rest] = argv;
     this.namedArgv = {
       node,
       bin,
       method,
-      generator,
+      strategy,
       rest
     };
   }
@@ -47,13 +47,13 @@ export default class Battlecry {
 
   load(path: string) {
     this.setup(path);
-    glob(`${path}/generators/*/*.generator.js`).forEach(path => {
+    glob(`${path}/strategies/*/*.strategy.js`).forEach(path => {
       // $FlowFixMe
-      const generatorClass = require(path).default;
-      const name = basename(path, '.generator.js');
+      const strategyClass = require(path).default;
+      const name = basename(path, '.strategy.js');
 
-      if (!generatorClass) return logger.warn(`Skipping generator ${basename(path)} - missing export default`);
-      this.generators[name] = this.createGenerator(name, path, generatorClass);
+      if (!strategyClass) return logger.warn(`Skipping strategy ${basename(path)} - missing export default`);
+      this.strategies[name] = this.createStrategy(name, path, strategyClass);
     });
   }
 
@@ -82,40 +82,40 @@ export default class Battlecry {
     return defaultGlobOptions;
   }
 
-  generator(name: string): Generator {
-    return this.createGenerator(name, this.generators[name].path, this.generators[name].constructor);
+  strategy(name: string): Strategy {
+    return this.createStrategy(name, this.strategies[name].path, this.strategies[name].constructor);
   }
 
-  createGenerator(name: string, path: string, generatorClass: typeof Generator): Generator {
-    const generator = new generatorClass();
-    generator.name = name;
-    generator.battlecry = this;
-    generator.path = path;
+  createStrategy(name: string, path: string, StrategyClass: typeof Strategy): Strategy {
+    const strategy = new StrategyClass();
+    strategy.name = name;
+    strategy.battlecry = this;
+    strategy.path = path;
 
-    return generator;
+    return strategy;
   }
 
   register() {
-    Object.keys(this.generators).forEach(name => this.generators[name].register());
+    Object.keys(this.strategies).forEach(name => this.strategies[name].register());
   }
 
-  singleHelp(generator: Generator) {
-    logger.default(`Help for ${generator.name} generator:`);
+  singleHelp(strategy: Strategy) {
+    logger.default(`Help for ${strategy.name} strategy:`);
     logger.emptyLine();
 
-    generator.help();
+    strategy.help();
     logger.emptyLine();
 
-    logger.default(`To show all generators run --help without a generator name`);
+    logger.default(`To show all strategies run --help without a strategy name`);
     logger.emptyLine();
   }
 
   help() {
-    const singleGenerator = this.generators[this.namedArgv.generator];
-    if (singleGenerator) return this.singleHelp(singleGenerator);
+    const singleStrategy = this.strategies[this.namedArgv.strategy];
+    if (singleStrategy) return this.singleHelp(singleStrategy);
 
-    Object.values(this.generators).forEach((generator: any) => {
-      generator.help();
+    Object.values(this.strategies).forEach((strategy: any) => {
+      strategy.help();
       logger.emptyLine();
     });
   }
@@ -151,13 +151,13 @@ export default class Battlecry {
   }
 
   get transmutedArgv(): string[] {
-    const { node, bin, method, generator, rest } = this.namedArgv;
+    const { node, bin, method, strategy, rest } = this.namedArgv;
 
     if (['--about', '-A'].includes(method)) this.about();
     if (['--help', '-h', '--version', '-V'].includes(method)) return this.argv;
 
     const aliasedMethod = this.aliases[method] || method;
-    return [node, bin, `${aliasedMethod}-${generator}`, ...rest];
+    return [node, bin, `${aliasedMethod}-${strategy}`, ...rest];
   }
 
   play() {
@@ -165,7 +165,7 @@ export default class Battlecry {
 
     program
       .version(this.version)
-      .usage('<method> <generator> [args] [options]')
+      .usage('<method> <strategy> [args] [options]')
       .option('-A, --about', 'output info about Battlecry contributors')
       .on('--help', () => this.help())
       .parse(this.transmutedArgv);

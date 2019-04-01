@@ -1,6 +1,6 @@
-import { Generator, command } from 'battlecry';
+import { Strategy, command } from 'battlecry';
 
-export default class __NaMe__Generator extends Generator {
+export default class __NaMe__Strategy extends Strategy {
   compatibility = '1.x';
 
   @command({ args: 'name', description: 'Create a new __na me__' })

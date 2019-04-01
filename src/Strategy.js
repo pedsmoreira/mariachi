@@ -18,7 +18,7 @@ import { dd, logger } from './helpers';
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
 
-export default class Generator {
+export default class Strategy {
   options: Options;
   args: Args;
 
@@ -49,9 +49,20 @@ export default class Generator {
     return semver.satisfies(this.battlecry.version, this.compatibility);
   }
 
+  get loaded() {
+    this.logWarn('Loaded', 'Method not implemented - returning false');
+    return false;
+  }
+
+  onLoad() {}
+
   /*
    * Actions
    */
+
+  load() {
+    this.logWarn('Load', 'Method not implemented');
+  }
 
   async play(methodName: string): Promise<*> {
     try {
@@ -125,8 +136,12 @@ export default class Generator {
    * Chain helpers
    */
 
-  generator(name?: string): Generator {
-    return this.battlecry.generator(name || this.name);
+  strategies(...name: string[]): Collection<Strategy> {
+    return new Collection(this.battlecry.strategies(name));
+  }
+
+  strategy(name?: string): Strategy {
+    return this.battlecry.strategy(name || this.name);
   }
 
   setOptions(options: Options): this {
@@ -161,14 +176,19 @@ export default class Generator {
    * Other helpers
    */
 
-  exec(command: string): string | Buffer {
+  exec(command: string, path?: string): string | Buffer {
     logger.success(`🏃  Exec command: ${command}`);
     logger.addIndentation();
 
+    if (path) command = `cd ${path}; ${command}`;
     const result = execSync(command, { stdio: 'inherit' });
 
     logger.removeIndentation();
     return result;
+  }
+
+  execSsh(privateKey: string, command: string, path?: string) {
+    this.exec(`ssh-agent $(ssh-add ${privateKey}; ${command})`, path);
   }
 
   /*
@@ -214,7 +234,7 @@ export default class Generator {
   }
 
   throwMethodNotImplemented(method: string): void {
-    throw new Error(`Method ${method} not implemented on generator ${this.constructor.name}`);
+    throw new Error(`Method ${method} not implemented on strategy ${this.constructor.name}`);
   }
 
   throwMethodNotRegistered(method: string): void {

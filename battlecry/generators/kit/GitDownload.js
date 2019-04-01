@@ -24,7 +24,7 @@ export default class GitDownload {
       downloadGitRepo(this.repository, this.tmpPath, err => {
         if (err) return reject(err);
 
-        this.copyGenerators();
+        this.copyStrategies();
         resolve();
       });
     });
@@ -43,7 +43,7 @@ export default class GitDownload {
     return fs.existsSync(this.battlecryPath) && fs.lstatSync(this.battlecryPath).isDirectory();
   }
 
-  copyGenerators(): void {
+  copyStrategies(): void {
     this.logBattlecryFolderGuessed();
     this.logCopyingPath();
 

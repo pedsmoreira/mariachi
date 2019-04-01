@@ -4,7 +4,7 @@ import program from 'commander';
 import chalk from 'chalk';
 import casex from 'casex';
 
-import Generator from '../Generator';
+import Strategy from '../Strategy';
 import { logger } from '../helpers';
 
 import Option, { type OptionProps } from './Option';
@@ -17,20 +17,20 @@ export type CommandConfig = {
 };
 
 export default class Command {
-  generator: Generator;
+  strategy: Strategy;
   name: string;
 
-  constructor(generator: Generator, name: string) {
-    this.generator = generator;
+  constructor(strategy: Strategy, name: string) {
+    this.strategy = strategy;
     this.name = name;
   }
 
   get alias(): ?string {
-    return this.generator.battlecry.alias(this.name);
+    return this.strategy.battlecry.alias(this.name);
   }
 
   get config(): CommandConfig {
-    return this.generator.config[this.name];
+    return this.strategy.config[this.name];
   }
 
   get options(): Option[] {
@@ -53,16 +53,16 @@ export default class Command {
   }
 
   get commanderInstruction(): string {
-    return `${this.commanderName}-${this.generator.name} ${this.commanderArgs}`;
+    return `${this.commanderName}-${this.strategy.name} ${this.commanderArgs}`;
   }
 
   get commanderAction(): Function {
     const command = this;
 
     return function() {
-      command.generator.battlecry.executed = true;
+      command.strategy.battlecry.executed = true;
 
-      command.generator
+      command.strategy
         .setArgsArray(command.name, this.parent.args)
         .setOptions(this.opts())
         .play(command.name);
@@ -91,8 +91,8 @@ export default class Command {
     const { args, description } = this.config;
 
     const name = chalk.hex(logger.BRASIL_GREEN)(this.alias || this.commanderName);
-    const generatorName = chalk.hex(logger.BRASIL_YELLOW)(this.generator.name);
-    let text = `cry ${name} ${generatorName} ${args || ''}`;
+    const strategyName = chalk.hex(logger.BRASIL_YELLOW)(this.strategy.name);
+    let text = `cry ${name} ${strategyName} ${args || ''}`;
 
     logger.default(text);
     if (description) logger.log(chalk.hex(logger.MUTED), description);
