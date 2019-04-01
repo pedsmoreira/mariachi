@@ -103,7 +103,7 @@ export default class Battlecry {
     strategy.help();
     logger.emptyLine();
 
-    logger.default(`To show all strategies run --help without a strategy name`);
+    logger.default(`ℹ️ To show all strategies run --help without a strategy name`);
     logger.emptyLine();
   }
 
