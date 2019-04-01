@@ -1,7 +1,4 @@
 {
-  // Flow
-  "javascript.validate.enable": false,
-
   // Prettier
   "editor.formatOnSave": true,
 

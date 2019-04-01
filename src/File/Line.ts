@@ -1,9 +1,7 @@
-// @flow
-
 import battleCasex from 'battle-casex';
 
 import File from './File';
-import LineCollection, { type LineCollectionType } from './LineCollection';
+import LineCollection, { LineCollectionType } from './LineCollection';
 
 export default class Line {
   file: File;
@@ -39,26 +37,24 @@ export default class Line {
     return this.file.add(this.index + 1, texts);
   }
 
-  until(value: Line | number | (Line => any)): LineCollectionType {
+  until(value: Line | number | Function): LineCollectionType {
     let index: number = 0;
 
     if (typeof value === 'number') index = value;
     else if (value instanceof Line) index = value.index;
     else {
-      // $FlowFixMe
       index = this.allNext.find(line => line.last || value(line)).index;
     }
 
     const start = Math.min(this.index, index);
     const end = Math.max(this.index, index);
 
-    return new LineCollection(...this.file.lines.slice(start, end + 1));
+    return new LineCollection(...this.file.lines.slice(start, end + 1)) as any;
   }
 
-  untilLast(search: string | (Line => any)): LineCollectionType {
-    // $FlowFixMe
+  untilLast(search: string | Function): LineCollectionType {
     const lastMatching: Line = this.allNext.find(line => {
-      return line.last || typeof search === 'string' ? !line.text.includes(search) : !search(line);
+      return line.last || typeof search === 'string' ? !line.text.includes(search as any) : !search(line);
     });
 
     return this.until(lastMatching.previous);
@@ -114,7 +110,7 @@ export default class Line {
   }
 
   get allPrevious(): LineCollectionType {
-    return new LineCollection(...this.file.lines.slice(0, this.index));
+    return new LineCollection(...this.file.lines.slice(0, this.index)) as any;
   }
 
   get next(): Line {
@@ -123,7 +119,7 @@ export default class Line {
   }
 
   get allNext(): LineCollectionType {
-    return new LineCollection(...this.file.lines.slice(this.index + 1));
+    return new LineCollection(...this.file.lines.slice(this.index + 1)) as any;
   }
 
   up(): this {
@@ -155,7 +151,6 @@ export default class Line {
   }
 
   get indentation() {
-    // $FlowFixMe
     return this.text.match(/^[\s]*/g)[0];
   }
 

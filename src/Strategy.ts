@@ -1,17 +1,12 @@
-// @flow
-
-import fs from 'fs';
 import { join, basename, dirname } from 'path';
-import chalk from 'chalk';
-import program from 'commander';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
 
-import File from './File';
+import File, {Collection} from './File';
 import Battlecry from './Battlecry';
-import Command, { type CommandConfig } from './Command';
+import Command, { CommandConfig } from './Command';
 
 import { dd, logger } from './helpers';
 
@@ -35,7 +30,7 @@ export default class Strategy {
   static decoratedConfig = {};
 
   constructor() {
-    this.config = this.constructor.decoratedConfig;
+    this.config = (this.constructor as any).decoratedConfig;
   }
 
   get basename() {
@@ -70,7 +65,7 @@ export default class Strategy {
     this.logWarn('Load', 'Method not implemented');
   }
 
-  async play(methodName: string): Promise<*> {
+  async play(methodName: string): Promise<any> {
     try {
       // $FlowFixMe
       const method: Function = this[methodName];
@@ -98,7 +93,7 @@ export default class Strategy {
    * File Helpers
    */
 
-  file(pattern: string, name?: ?string, globOptions?: Object): File {
+  file(pattern: string, name?: string | null, globOptions?: Object): File {
     const files = this.files(pattern, name, globOptions);
     if (!files.length) {
       const path = battleCasex(pattern, name);
@@ -109,7 +104,7 @@ export default class Strategy {
     return files[0];
   }
 
-  files(pattern: string, name?: ?string, globOptions?: Object): File[] {
+  files(pattern: string, name?: string | null, globOptions?: Object): File[] {
     return File.glob(pattern, name, globOptions);
   }
 
@@ -142,8 +137,8 @@ export default class Strategy {
    * Chain helpers
    */
 
-  strategies(...name: string[]): Collection<Strategy> {
-    return new Collection(this.battlecry.strategies(name));
+  strategies(...names: string[]): Collection<Strategy> {
+    return new Collection(names.map(name => this.strategy(name)));
   }
 
   strategy(name?: string): Strategy {

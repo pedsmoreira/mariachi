@@ -1,18 +1,16 @@
-// @flow
-
-import program from 'commander';
+const program = require('commander');
 import chalk from 'chalk';
 import casex from 'casex';
 
 import Strategy from '../Strategy';
 import { logger } from '../helpers';
 
-import Option, { type OptionProps } from './Option';
+import Option, { OptionProps } from './Option';
 import CommandArg from './Arg';
 
 export type CommandConfig = {
   args?: string,
-  options?: { [string]: OptionProps },
+  options?: { [key: string]: OptionProps },
   description?: string
 };
 
@@ -25,7 +23,7 @@ export default class Command {
     this.name = name;
   }
 
-  get alias(): ?string {
+  get alias(): string | null {
     return this.strategy.battlecry.alias(this.name);
   }
 
@@ -49,7 +47,7 @@ export default class Command {
   }
 
   get commanderName() {
-    return this.options.name || casex(this.name, 'na-me');
+    return this.options['name'] || casex(this.name, 'na-me');
   }
 
   get commanderInstruction(): string {
@@ -71,9 +69,8 @@ export default class Command {
 
   register(): void {
     const cmd = program
-      // $FlowFixMe
       .command(this.commanderInstruction, '', { noHelp: true })
-      .action(this.commanderAction);
+      .action(this.commanderAction as any);
 
     this.options.forEach(option => cmd.option(option.commanderFlags, option.description, option.defaultArg));
   }

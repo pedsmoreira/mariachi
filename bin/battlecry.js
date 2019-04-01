@@ -12,6 +12,6 @@ try {
 
   battlecry.play();
 } catch (error) {
-  const dd = require(`${__dirname}/../src`).dd;
+  const dd = require(`${__dirname}/../src/index.ts`).dd;
   dd(error);
 }

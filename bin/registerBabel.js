@@ -18,7 +18,7 @@ function buildModule(type, value) {
 
   if (name === 'babel-plugin-module-resolver') {
     options.root = [`${process.cwd()}/battlecry`];
-    options.alias.battlecry = `${__dirname}/..`;
+    options.alias.battlecry = `${__dirname}/../src/index.ts`;
   }
 
   const path = dirname(require.resolve(`${name}/package.json`));
@@ -37,5 +37,6 @@ require('@babel/register')({
   babelrc: false,
   ignore: [ignore],
   presets: buildPresets(),
-  plugins: buildPlugins()
+  plugins: buildPlugins(),
+  extensions: ['.js', '.ts']
 });

@@ -1,5 +1,3 @@
-// @flow
-
 import chalk from 'chalk';
 
 import { logger } from '../helpers';
@@ -15,10 +13,10 @@ export default class Option {
   name: string;
   description: string;
   alias: string;
-  arg: ?('required' | 'optional');
-  defaultArg: ?string;
+  arg?: 'required' | 'optional';
+  defaultArg?: string;
 
-  constructor(name: string, properties: Object) {
+  constructor(name: string, properties: OptionProps) {
     this.name = name;
     this.description = properties.description;
     this.arg = properties.arg;

@@ -1,5 +1,3 @@
-// @flow
-
 export default class RemoteFile extends File {
   remote: Remote;
 

@@ -1,5 +1,3 @@
-// @flow
-
 import nodeGlob from 'glob';
 
 export const defaultGlobOptions = {

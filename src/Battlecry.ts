@@ -1,9 +1,9 @@
-import program from 'commander';
+const program = require('commander');
 import { basename } from 'path';
-import fs from 'fs';
+import * as fs from 'fs';
 import chalk from 'chalk';
 
-import pkg from '../package.json';
+import * as pkg from '../package.json';
 
 import Strategy from './Strategy';
 import glob, { defaultGlobOptions } from './File/glob';
@@ -66,7 +66,7 @@ export default class Battlecry {
     }
   }
 
-  alias(method: string): ?string {
+  alias(method: string): string | null {
     const values = Object.values(this.aliases);
     const index = values.indexOf(method);
 
@@ -79,6 +79,7 @@ export default class Battlecry {
   }
 
   strategy(name: string): Strategy {
+    // @ts-ignore
     return this.createStrategy(name, this.strategies[name].path, this.strategies[name].constructor);
   }
 

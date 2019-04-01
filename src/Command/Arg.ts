@@ -1,5 +1,3 @@
-// @flow
-
 export default class Arg {
   name: string;
   optional: boolean;

@@ -1,6 +1,4 @@
-// @flow
-
-import fs from 'fs';
+import * as fs from 'fs';
 import mkdirp from 'mkdirp';
 import { resolve, basename, dirname, extname } from 'path';
 import { EOL } from 'os';
@@ -13,7 +11,9 @@ import { logger } from '../helpers';
 import glob from './glob';
 
 import Line from './Line';
-import LineCollection, { type LineCollectionType } from './LineCollection';
+import LineCollection, { LineCollectionType } from './LineCollection';
+import Remote from './Remote';
+import RemoteFile from './RemoteFile';
 
 const LINE_BREAK = /\r?\n/;
 
@@ -40,7 +40,7 @@ export default class File {
     return path.startsWith('~') ? homedir + path.substring(1) : path;
   }
 
-  static glob(pattern: string, name?: ?string, options?: Object): File[] {
+  static glob(pattern: string, name?: string | null, options?: Object): File[] {
     const files = [];
 
     glob(battleCasex(this.homedPath(pattern), name), options).forEach(path => {
@@ -78,11 +78,11 @@ export default class File {
    */
 
   get binary(): boolean {
-    return this.exists && this.constructor.binary(this.path);
+    return this.exists && (this.constructor as any).binary(this.path);
   }
 
   get exists(): boolean {
-    return this.constructor.exists(this.path);
+    return (this.constructor as any).exists(this.path);
   }
 
   get name(): string {
@@ -110,16 +110,20 @@ export default class File {
     return extname(this.path);
   }
 
+  get self(): any {
+    return this.constructor;
+  }
+
   save(): this {
     this.saveAs(this.path);
     return this;
   }
 
-  saveAs(path: string, name?: ?string): File {
+  saveAs(path: string, name?: string | null): File {
     if (path.endsWith('/')) path += this.filename;
-    path = this.constructor.homedPath(battleCasex(path, name));
+    path = this.self.homedPath(battleCasex(path, name));
 
-    const creating = !this.constructor.exists(path);
+    const creating = !this.self.exists(path);
     mkdirp.sync(dirname(path));
 
     if (this.binary) {
@@ -134,9 +138,12 @@ export default class File {
     return new File(path);
   }
 
-  saveAsRemote(remote: Remote, path: string, name?: string): RemoteFile {}
+  saveAsRemote(remote: Remote, path: string, name?: string): RemoteFile {
+    // @ts-ignore
+    return null;
+  }
 
-  move(path: string, name?: ?string): this {
+  move(path: string, name?: string | null): this {
     this.read();
     this.delete();
 
@@ -144,7 +151,7 @@ export default class File {
     return this.save();
   }
 
-  rename(path: string, name?: ?string) {
+  rename(path: string, name?: string | null) {
     let filename = path;
     if (!filename.includes('.')) filename += this.extension;
 
@@ -152,17 +159,17 @@ export default class File {
   }
 
   delete(): void {
-    this.constructor.delete(this.path);
+    this.self.delete(this.path);
     logger.success(`🔥  File deleted: ${this.path}`);
   }
 
   chmod(mode: number): this {
-    this.constructor.chmod(this.path, mode);
+    this.self.chmod(this.path, mode);
     return this;
   }
 
   exec(args?: string): this {
-    return this.constructor.exec(args);
+    return this.self.exec(args);
   }
 
   /*
@@ -170,19 +177,19 @@ export default class File {
    */
 
   read() {
-    this.text = this.exists ? this.constructor.read(this.path) : '';
+    this.text = this.exists ? this.self.read(this.path) : '';
   }
 
   get text(): string {
-    return this.lines.map(line => line.text).join(this.constructor.EOL);
+    return this.lines.map(line => line.text).join(this.self.EOL);
   }
 
   get textArray(): string[] {
     return this.lines.textArray;
   }
 
-  set text(text: string): void {
-    this.lines = text.split(LINE_BREAK);
+  set text(text: string) {
+    this.setLines( text.split(LINE_BREAK));
   }
 
   line(index: number): Line {
@@ -196,7 +203,8 @@ export default class File {
     return this._lines;
   }
 
-  set lines(texts: string[]): void {
+  setLines(texts: string[]) {
+    // @ts-ignore
     this._lines = new LineCollection();
     this.add(0, texts);
   }
@@ -241,7 +249,8 @@ export default class File {
     return this.all(search, name, options)[0] || this.stubSearch(search, name);
   }
 
-  all(search: string = '', name?: string, options: Object = {}): LineCollectionType {
+  all(search: string = '', name?: string, options: any = {}): LineCollectionType {
+    // @ts-ignore
     const collection: LineCollectionType = new LineCollection();
 
     search = battleCasex(search, name);
@@ -263,7 +272,7 @@ export default class File {
   add(index: number, items: any): LineCollectionType {
     if (!Array.isArray(items)) items = [items];
 
-    const collection: LineCollectionType = new LineCollection();
+    const collection: any = new LineCollection();
     collection.push(...items.map(item => (item instanceof Line ? item : new Line(this, item))));
 
     this._lines.splice(index, 0, ...collection);

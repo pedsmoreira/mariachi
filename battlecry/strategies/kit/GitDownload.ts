@@ -1,17 +1,17 @@
-// @flow
-
-import fs from 'fs';
+import * as fs from 'fs';
 import tmp from 'tmp';
 import downloadGitRepo from 'download-git-repo';
-import { basename, join } from 'path';
+import { join } from 'path';
+
+// @ts-ignore
 import { logger, File } from 'battlecry';
 
 export default class GitDownload {
   repository: string;
-  dir: ?string;
+  dir: string | null;
   tmpPath: string;
 
-  constructor(repository: string, dir: ?string) {
+  constructor(repository: string, dir: string | null) {
     this.repository = repository;
     this.dir = dir;
     this.tmpPath = tmp.tmpNameSync();

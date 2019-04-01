@@ -1,7 +1,6 @@
-// @flow
-
-export default function withMethodMissing(Klass: Function) {
+export default function withMethodMissing(Klass: any) {
   return class extends Klass {
+    // @ts-ignore
     _proxy: Proxy<Klass>;
 
     constructor(...args: any[]) {
@@ -14,7 +13,7 @@ export default function withMethodMissing(Klass: Function) {
       return this._proxy;
     }
 
-    _handleMethodMissing = (target: Object, name: any) => {
+    _handleMethodMissing = (target: any, name: any) => {
       const value = target[name];
       if (value !== undefined) return typeof value === 'function' ? value.bind(target) : value;
 

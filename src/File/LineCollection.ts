@@ -1,12 +1,12 @@
-// @flow
-
 import Line from './Line';
 import withMethodMissing from './withMethodMissing';
 
 export type LineCollectionType = Line & Array<Line> & LineCollection;
 
+// @ts-ignore
 @withMethodMissing
 export default class LineCollection {
+  // @ts-ignore
   _proxy: Proxy<LineCollection>;
 
   lines: Line[];
@@ -35,11 +35,11 @@ export default class LineCollection {
     return this._proxy;
   }
 
-  add(value: Line | LineCollection | (this => Line | LineCollection)) {
+  add(value: Line | LineCollection | Function) {
     if (typeof value === 'function') value = value(this);
 
     if (value instanceof Line) this.lines.push(value);
-    else this.lines.push(...value.lines);
+    else this.lines.push(...(value as any).lines);
 
     this.lines.sort((a, b) => a.index - b.index);
     return this._proxy;

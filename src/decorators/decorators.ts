@@ -1,13 +1,11 @@
-import casex from 'casex';
-
-function config(target: Object, key: string) {
+function config(target: any, key: string) {
   const klass = target.constructor;
   klass.decoratedConfig[key] = {};
 
   return klass.decoratedConfig[key];
 }
 
-export function command(targetOrProperties: any, methodName: string, descriptor: PropertyDescriptor<*>) {
+export function command(targetOrProperties: any, methodName: string, descriptor: PropertyDescriptor) {
   // @command - without params
   if (methodName) {
     config(targetOrProperties, methodName);

@@ -1,5 +1,3 @@
-// @flow
-
 import File from '../File';
 
 import logger from './logger';
