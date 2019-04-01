@@ -4,7 +4,7 @@ import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
 
-import File, {Collection} from './File';
+import File from './File';
 import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
 
@@ -12,6 +12,11 @@ import { dd, logger } from './helpers';
 
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
+
+type ExecOptions = {
+  path?: string;
+  privateKey?: string;
+};
 
 export default class Strategy {
   options: Options;
@@ -60,6 +65,13 @@ export default class Strategy {
   /*
    * Actions
    */
+
+  require(...strategies: string[]) {
+    return this.strategies(...strategies).map(strategy => {
+      strategy.load();
+      return strategy;
+    });
+  }
 
   load() {
     this.logWarn('Load', 'Method not implemented');
@@ -137,8 +149,8 @@ export default class Strategy {
    * Chain helpers
    */
 
-  strategies(...names: string[]): Collection<Strategy> {
-    return new Collection(names.map(name => this.strategy(name)));
+  strategies(...names: string[]): Strategy[] {
+    return names.map(name => this.strategy(name));
   }
 
   strategy(name?: string): Strategy {
@@ -177,19 +189,17 @@ export default class Strategy {
    * Other helpers
    */
 
-  exec(command: string, path?: string): string | Buffer {
+  exec(command: string, options?: ExecOptions): string | Buffer {
     logger.success(`🏃  Exec command: ${command}`);
     logger.addIndentation();
 
-    if (path) command = `cd ${path}; ${command}`;
+    if (options.privateKey) command = `ssh-agent $(ssh-add ${options.privateKey}; ${command})`;
+    if (options.path) command = `cd ${options.path}; ${command}`;
+
     const result = execSync(command, { stdio: 'inherit' });
 
     logger.removeIndentation();
     return result;
-  }
-
-  execSsh(privateKey: string, command: string, path?: string) {
-    this.exec(`ssh-agent $(ssh-add ${privateKey}; ${command})`, path);
   }
 
   /*

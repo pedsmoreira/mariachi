@@ -1,13 +1,13 @@
 function config(target: any, key: string) {
   const klass = target.constructor;
 
-  if(!klass.decoratedConfig) klass.decoratedConfig = {};
+  if (!klass.decoratedConfig) klass.decoratedConfig = {};
   klass.decoratedConfig[key] = {};
 
   return klass.decoratedConfig[key];
 }
 
-export function command(targetOrProperties: any, methodName: string, descriptor: PropertyDescriptor) {
+function commandFn(targetOrProperties: any, methodName: string, descriptor: PropertyDescriptor) {
   // @command - without params
   if (methodName) {
     config(targetOrProperties, methodName);
@@ -31,4 +31,7 @@ export function option(name: any, details: Object = {}) {
   };
 }
 
+const command: any = commandFn;
 command.option = option;
+
+export { command };

@@ -10,11 +10,11 @@ import glob, { defaultGlobOptions } from './File/glob';
 import { logger } from './helpers';
 
 type NamedArgv = {
-  node: string,
-  bin: string,
-  method: string,
-  strategy: string,
-  rest: string[]
+  node: string;
+  bin: string;
+  method: string;
+  strategy: string;
+  rest: string[];
 };
 
 export default class Battlecry {
@@ -45,9 +45,9 @@ export default class Battlecry {
 
   load(path: string) {
     this.setup(path);
-    glob(`${path}/strategies/*/*.strategy.js`).forEach(path => {
+    glob(`${path}/strategies/*/*.strategy.{js,ts}`).forEach(path => {
       const strategyClass = require(path).default;
-      const name = basename(path, '.strategy.js');
+      const name = basename(path.split('.strategy.')[0]);
 
       if (!strategyClass) return logger.warn(`Skipping strategy ${basename(path)} - missing export default`);
       this.strategies[name] = this.createStrategy(name, path, strategyClass);

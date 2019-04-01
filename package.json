@@ -29,7 +29,7 @@
     "test:coverage": "jest --coverage",
     "test:ci": "npm run test:coverage",
     "precommit": "lint-staged",
-    "prettier": "prettier --write src/**/*.js",
+    "prettier": "prettier --write src/**/*.{js,ts}",
     "preversion": "npm test",
     "version": "git add package.json",
     "postversion": "git push && git push --tags"
@@ -67,7 +67,7 @@
     "prettier": "^1.16.4"
   },
   "lint-staged": {
-    "src/**/*.js": [
+    "src/**/*.{js,ts}": [
       "prettier --write",
       "git add"
     ]

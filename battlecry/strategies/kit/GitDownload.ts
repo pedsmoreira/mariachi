@@ -18,7 +18,6 @@ export default class GitDownload {
   }
 
   async handle() {
-    // $FlowFixMe
     return new Promise((resolve, reject) => {
       logger.success(`☁️  Downloading ${this.repository} repository`);
       downloadGitRepo(this.repository, this.tmpPath, err => {
