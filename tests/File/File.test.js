@@ -295,8 +295,8 @@ describe('File', () => {
       expect(textFile.find('b').index).toBe(1);
     });
 
-    it('throws an error when nothing is found', () => {
-      expect(() => textFile.find('text-not-in-file')).toThrowError();
+    it('returns stub when nothing is found', () => {
+      expect(() => textFile.find('text-not-in-file').stub).toBeTruthy();
     });
   });
 
@@ -306,8 +306,8 @@ describe('File', () => {
       expect(textFile.last('b').index).toBe(1);
     });
 
-    it('throws an error when nothing is found', () => {
-      expect(() => textFile.last('text-not-in-file')).toThrowError();
+    it('returns stub when nothing is found', () => {
+      expect(() => textFile.last('text-not-in-file').stub).toBeTruthy();
     });
   });
 
