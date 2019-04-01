@@ -32,7 +32,7 @@ export default class Strategy {
   compatibility: string | string[];
 
   config: { [method: string]: CommandConfig };
-  static decoratedConfig;
+  static decoratedConfig: { [method: string]: CommandConfig };
 
   constructor() {
     this.config = (this.constructor as any).decoratedConfig;
@@ -144,6 +144,12 @@ export default class Strategy {
   template(pattern?: string, globOptions?: Object): File {
     return this.templates(pattern, globOptions)[0];
   }
+
+  /*
+   * Remote helpers
+   */
+
+  remote(_config: any): any {}
 
   /*
    * Chain helpers
