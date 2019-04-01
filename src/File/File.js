@@ -4,7 +4,7 @@ import fs from 'fs';
 import mkdirp from 'mkdirp';
 import { resolve, basename, dirname, extname } from 'path';
 import { EOL } from 'os';
-import isBinaryFile from 'isbinaryfile';
+import { isBinaryFileSync } from 'isbinaryfile';
 import battleCasex from 'battle-casex';
 const homedir = require('os').homedir();
 
@@ -43,7 +43,7 @@ export default class File {
   static glob(pattern: string, name?: ?string, options?: Object): File[] {
     const files = [];
 
-    glob(battleCasex(this.constructor.homedPath(pattern), name), options).forEach(path => {
+    glob(battleCasex(this.homedPath(pattern), name), options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -56,7 +56,7 @@ export default class File {
   }
 
   static binary(path: string) {
-    return isBinaryFile.sync(path);
+    return isBinaryFileSync(path);
   }
 
   static read(path: string) {
