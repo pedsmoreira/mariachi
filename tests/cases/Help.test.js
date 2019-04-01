@@ -5,7 +5,10 @@ describe('Case: Help', () => {
 
   function setupBattlecry() {
     battlecry.load(`${__dirname}/../fixtures/battlecry`);
+
     battlecry.singleHelp = jest.fn();
+
+    battlecry.strategies.unit = { register: jest.fn() };
     battlecry.strategies.unit.help = jest.fn();
   }
 
@@ -17,8 +20,8 @@ describe('Case: Help', () => {
 
     it('shows help for the requested strategy', () => {
       battlecry.play();
-      expect(battlecry.strategies.unit.help).not.toHaveBeenCalled();
       expect(battlecry.singleHelp).toHaveBeenCalled();
+      expect(battlecry.strategies.unit.help).not.toHaveBeenCalled();
     });
   });
 
@@ -30,8 +33,8 @@ describe('Case: Help', () => {
 
     it('shows help for all strategies', () => {
       battlecry.play();
-      expect(battlecry.strategies.unit.help).toHaveBeenCalled();
       expect(battlecry.singleHelp).not.toHaveBeenCalled();
+      expect(battlecry.strategies.unit.help).toHaveBeenCalled();
     });
   });
 });
