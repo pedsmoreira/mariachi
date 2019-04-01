@@ -27,7 +27,7 @@ export default class Strategy {
   compatibility: string | string[];
 
   config: { [method: string]: CommandConfig };
-  static decoratedConfig = {};
+  static decoratedConfig;
 
   constructor() {
     this.config = (this.constructor as any).decoratedConfig;

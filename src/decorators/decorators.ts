@@ -1,5 +1,7 @@
 function config(target: any, key: string) {
   const klass = target.constructor;
+
+  if(!klass.decoratedConfig) klass.decoratedConfig = {};
   klass.decoratedConfig[key] = {};
 
   return klass.decoratedConfig[key];
