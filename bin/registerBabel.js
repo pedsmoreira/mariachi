@@ -21,6 +21,10 @@ function buildModule(type, value) {
     options.alias.battlecry = `${__dirname}/../src/index.ts`;
   }
 
+  if (name === '@babel/plugin-transform-runtime') {
+    options = { absoluteRuntime: `${__dirname}/../@babel/runtime` };
+  }
+
   const path = dirname(require.resolve(`${name}/package.json`));
   return options ? [path, options] : path;
 }
