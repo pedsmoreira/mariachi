@@ -1,8 +1,10 @@
 {
-  "presets": ["flow", "env", "stage-0"],
+  "presets": ["@babel/preset-env", "@babel/preset-flow", "@babel/preset-typescript"],
   "plugins": [
-    "transform-async-to-strategy",
-    "transform-decorators-legacy",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-async-to-generator",
+    "@babel/plugin-transform-runtime",
     [
       "module-resolver",
       {
