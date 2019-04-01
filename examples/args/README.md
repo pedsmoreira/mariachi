@@ -3,5 +3,5 @@
 To download this example:
 
 ```bash
-cry download generator pedsmoreira/battlecry --dir examples/args
+cry download strategy pedsmoreira/battlecry --dir examples/args
 ```

@@ -1,3 +1,3 @@
-describe('Case: Generator not found', () => {
+describe('Case: Strategy not found', () => {
   it('should ', () => {});
 });

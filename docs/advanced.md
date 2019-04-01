@@ -10,7 +10,7 @@ If you need to provide custom `globOptions`, please refer to the list of options
 
 Battlecry exports a few internal methods and libraries that it uses.
 
-You can import them in case you need to so something that can't be covered by file or generator helpers.
+You can import them in case you need to so something that can't be covered by file or strategy helpers.
 
 * Libraries
 
@@ -26,6 +26,6 @@ You can import them in case you need to so something that can't be covered by fi
   * [Battlecry](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/Battlecry.js)
   * [ArgBuilder](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/ArgBuilder.js)
   * [File](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/File.js)
-  * [Generator](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/Generator.js)
-  * [GeneratorMethod](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/GeneratorMethod.js)
+  * [Strategy](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/Strategy.js)
+  * [StrategyMethod](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/StrategyMethod.js)
   * [OptionBuilder](https://github.com/pedsmoreira/battlecry/blob/master/src/classes/OptionBuilder.js)

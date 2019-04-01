@@ -4,5 +4,5 @@
 To download this example:
 
 ```bash
-cry download generator pedsmoreira/battlecry --dir examples/__na-me__
+cry download strategy pedsmoreira/battlecry --dir examples/__na-me__
 ```

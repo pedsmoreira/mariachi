@@ -1,13 +1,13 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class OptionalArgOptionGenerator extends Generator {
+export default class OptionalArgOptionStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',
       options: {
         cheesy: { description: 'Make the filename cheesy', arg: 'optional' }
       },
-      description: 'Example generator method that have an option with optional arg'
+      description: 'Example strategy method that have an option with optional arg'
     }
   };
 

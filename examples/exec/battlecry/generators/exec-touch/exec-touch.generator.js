@@ -1,6 +1,6 @@
-import { Generator, File } from 'battlecry';
+import { Strategy, File } from 'battlecry';
 
-export default class ExecTouchGenerator extends Generator {
+export default class ExecTouchStrategy extends Strategy {
   config = {
     generate: {
       args: 'name'

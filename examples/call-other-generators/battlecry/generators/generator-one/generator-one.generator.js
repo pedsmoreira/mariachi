@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class GeneratorOneGenerator extends Generator {
+export default class StrategyOneStrategy extends Strategy {
   config = {
     generate: {
       args: 'name'
@@ -8,7 +8,7 @@ export default class GeneratorOneGenerator extends Generator {
   };
 
   generate() {
-    this.generator('generator-two')
+    this.strategy('strategy-two')
       .setArgs({ name: this.args.name })
       .setOptions({ special: true })
       .play('generate');

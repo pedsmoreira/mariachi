@@ -16,7 +16,7 @@
 
 # 0.3.1
 
-* Add globOptions to generator file helpers
+* Add globOptions to strategy file helpers
 * Add globOptions to BattleCry class (used on battlecry-setup.js)
 * Set default globOptions to allow listing files starting with `.` except for `._DS_Store`
 

@@ -1,13 +1,13 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class BooleanOptionGenerator extends Generator {
+export default class BooleanOptionStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',
       options: {
         dangerous: { description: 'Adds a warning text at the beginning end' }
       },
-      description: 'Example generator method that have a boolean option'
+      description: 'Example strategy method that have a boolean option'
     }
   };
 

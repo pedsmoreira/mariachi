@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class UnitGenerator extends Generator {
+export default class UnitStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',

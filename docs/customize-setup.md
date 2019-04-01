@@ -1,10 +1,10 @@
 # Customizing your battlecry-setup.js
 
-## Loading generators from other folders
+## Loading strategies from other folders
 
 ```js
 export default function setup(battlecry) {
-  battlecry.load('node_modules/battlecry-generatores-from-node-modules');
+  battlecry.load('node_modules/battlecry-strategyes-from-node-modules');
 }
 ```
 

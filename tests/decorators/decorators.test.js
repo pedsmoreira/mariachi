@@ -1,15 +1,15 @@
 import { command } from 'battlecry';
 
 describe('decorators', () => {
-  class TestGenerator {
+  class TestStrategy {
     @command({ args: 'name phone? ...others', description: 'foo bar' })
     @command.option('test')
     test() {}
   }
 
   it('registers the command with all decorators', () => {
-    const generator = new TestGenerator();
-    expect(generator.config).toEqual({
+    const strategy = new TestStrategy();
+    expect(strategy.config).toEqual({
       test: {
         args: 'name phone? ...others',
         description: 'foo bar',

@@ -1,8 +1,8 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
 const fixturesPath = `${__dirname}/../fixtures`;
 
-describe('Generator', () => {
+describe('Strategy', () => {
   describe('#file', () => {});
 
   describe('#files', () => {});
@@ -13,7 +13,7 @@ describe('Generator', () => {
 
   describe('#template', () => {});
 
-  describe('#generator', () => {});
+  describe('#strategy', () => {});
 
   describe('#exec', () => {
     describe('on success', () => {});

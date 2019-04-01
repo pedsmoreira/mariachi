@@ -1,10 +1,10 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class OptionalArgGenerator extends Generator {
+export default class OptionalArgStrategy extends Strategy {
   config = {
     generate: {
       args: 'name neighborhood?',
-      description: 'Example generator method that have an optional arg'
+      description: 'Example strategy method that have an optional arg'
     }
   };
 

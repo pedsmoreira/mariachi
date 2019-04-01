@@ -1,13 +1,13 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class CustomAliasOptionGenerator extends Generator {
+export default class CustomAliasOptionStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',
       options: {
         bold: { description: 'Make name bold', alias: 'n' }
       },
-      description: 'Example generator method that have an option with custom alias'
+      description: 'Example strategy method that have an option with custom alias'
     }
   };
 

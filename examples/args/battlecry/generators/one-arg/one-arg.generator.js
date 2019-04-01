@@ -1,10 +1,10 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class OneArgGenerator extends Generator {
+export default class OneArgStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',
-      description: 'Example generator method that uses one arg'
+      description: 'Example strategy method that uses one arg'
     }
   };
 

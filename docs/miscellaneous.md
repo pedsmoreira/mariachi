@@ -1,8 +1,8 @@
 # Miscellaneous
 
-## Sharing helpers across generators
+## Sharing helpers across strategies
 
-It's not uncommon to have multiple generators share similar helpers. To facilitate you doing that, you can include files from your BattleCry directory directly, without navigating with `..`.
+It's not uncommon to have multiple strategies share similar helpers. To facilitate you doing that, you can include files from your BattleCry directory directly, without navigating with `..`.
 
 If you have a `testHelper.js` file under `BattleCry/helpers/testHelper.js` for instance, you could include it as:
 
@@ -10,12 +10,12 @@ If you have a `testHelper.js` file under `BattleCry/helpers/testHelper.js` for i
 import testHelper from 'helpers/testHelper';
 ```
 
-## Downloading generators
+## Downloading strategies
 
-You may not have to write all your generators yourself. BattleCry comes with a handy tool for downloading generators from GitHub.
+You may not have to write all your strategies yourself. BattleCry comes with a handy tool for downloading strategies from GitHub.
 
 ```
-cry download generator owner/path
+cry download strategy owner/path
 ```
 
 If you want to a service provider other then GitHub, please check the [download-git-repo examples](https://github.com/flipxfx/download-git-repo#examples)
@@ -25,5 +25,5 @@ If you want to a service provider other then GitHub, please check the [download-
 BattleCry looks for a `battlecry/` folder in the repository root. If none is found it defaults to the repository root. You may also set a custom directory to start BattleCry's search with `--dir`.
 
 ```
-cry download generator owner/path --dir test-battlecry
+cry download strategy owner/path --dir test-battlecry
 ```

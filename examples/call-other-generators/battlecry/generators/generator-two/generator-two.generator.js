@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class GeneratorTwoGenerator extends Generator {
+export default class StrategyTwoStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',
@@ -13,6 +13,6 @@ export default class GeneratorTwoGenerator extends Generator {
   generate() {
     let name = this.args.name;
     if (this.options.special) name += '-special';
-    this.templates().forEach(file => file.saveAs(`it-worked/generator-two/`, name));
+    this.templates().forEach(file => file.saveAs(`it-worked/strategy-two/`, name));
   }
 }

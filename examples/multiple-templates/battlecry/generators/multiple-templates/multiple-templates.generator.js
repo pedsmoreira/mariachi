@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class MultipleTemplatesGenerator extends Generator {
+export default class MultipleTemplatesStrategy extends Strategy {
   config = {
     generate: {
       args: 'name'

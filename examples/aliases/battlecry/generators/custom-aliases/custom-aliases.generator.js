@@ -1,6 +1,6 @@
-import { Generator, logger } from 'battlecry';
+import { Strategy, logger } from 'battlecry';
 
-export default class CustomAliasesGenerator extends Generator {
+export default class CustomAliasesStrategy extends Strategy {
   config = {
     strike: {},
     roll: {}

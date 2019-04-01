@@ -1,7 +1,7 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 import format from 'helpers/format';
 
-export default class UsingHelperGenerator extends Generator {
+export default class UsingHelperStrategy extends Strategy {
   config = {
     generate: {
       args: 'name'

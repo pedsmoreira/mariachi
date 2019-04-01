@@ -1,7 +1,7 @@
-# Call Other Generators example
+# Call Other Strategys example
 
 To download this example:
 
 ```bash
-cry download generator pedsmoreira/battlecry --dir examples/call-other-generators
+cry download strategy pedsmoreira/battlecry --dir examples/call-other-strategies
 ```

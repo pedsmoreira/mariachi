@@ -1,8 +1,8 @@
-# Generator API
+# Strategy API
 
 ## Configuring your methods
 
-Each generator must have a `config` variable defining all BattleCry methods.
+Each strategy must have a `config` variable defining all BattleCry methods.
 
 ```js
 config = {
@@ -24,21 +24,21 @@ config = {
 * `file(pattern: string, name?: ?string, globOptions?: Object): File`: Get first file that matches `pattern`
 * `delete(path: string, name?: string): void`: Delete a file or directory
 
-- `templates(pattern?: string, globOptions?: Object): File[]`: Get files inside the generator's `templates/` subdirectory
+- `templates(pattern?: string, globOptions?: Object): File[]`: Get files inside the strategy's `templates/` subdirectory
 - `template(pattern?: string, globOptions?: Object): File`: Get first file that matches the pattern
 
 As you may have noticed, most of these methods return one or an array of File(s). For more details about the `File` class API, please check the [File API](#File API) section below.
 
 _Note: BattleCry performs all IO operations synchronously_
 
-## Helpers to call other generators
+## Helpers to call other strategies
 
-There may be cases when you may want to call multiple generators from one generators. BattleCry provides nice helpers for you to accomplish that in you `Generator` class.
+There may be cases when you may want to call multiple strategies from one strategies. BattleCry provides nice helpers for you to accomplish that in you `Strategy` class.
 
-* `generator(name: string): Generator`: Get a new generator instance by name
-* `setArgs(args: Object): this`: Setup generator arguments to be consumed when `play` is called
-* `setOptions(options: Object): this`: Setup generator options to be consumed when `play` is called
-* `play(methodName: string)`: Play a generator method
+* `strategy(name: string): Strategy`: Get a new strategy instance by name
+* `setArgs(args: Object): this`: Setup strategy arguments to be consumed when `play` is called
+* `setOptions(options: Object): this`: Setup strategy options to be consumed when `play` is called
+* `play(methodName: string)`: Play a strategy method
 
 ## Executing command line directly
 

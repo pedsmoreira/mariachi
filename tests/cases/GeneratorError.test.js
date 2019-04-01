@@ -1,3 +1,3 @@
-describe('Case: Generator error', () => {
+describe('Case: Strategy error', () => {
   it('should ', () => {});
 });

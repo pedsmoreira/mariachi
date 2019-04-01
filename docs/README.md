@@ -25,11 +25,11 @@ _Note: Battlecry got renamed from Samba to avoid confusions with the Samba Linux
 * ✅ Perfect for creating new modules, components and even new projects
 * ✅ Easy to share with your team through your favorite version control system
 * ✅ Use it with all languages and frameworks
-* ✅ Plug'n play customizable generators
+* ✅ Plug'n play customizable strategies
 * ✅ Simple & Powerful API
 * ✅ Next generation naming with [casex](https://github.com/pedsmoreira/casex)
 
-The farther you go on a project, the more likely you are to have a custom architecture and need your own generators to fit it. Each project has it's own requirements and it's only fair that it get it's own generators. With Battlecry you can create your own or download generators to give you a nice quickstart, and when you need to customize them, it's very easy to do so and you can share the changes with your whole team.
+The farther you go on a project, the more likely you are to have a custom architecture and need your own strategies to fit it. Each project has it's own requirements and it's only fair that it get it's own strategies. With Battlecry you can create your own or download strategies to give you a nice quickstart, and when you need to customize them, it's very easy to do so and you can share the changes with your whole team.
 
 ## Who uses Battlecry?
 
@@ -39,13 +39,13 @@ https://github.com/pedsmoreira/battlecry/issues/10
 
 ## Examples
 
-Each example can be downloaded with `cry download generator examples/example_name_here`.
+Each example can be downloaded with `cry download strategy examples/example_name_here`.
 
 1.  [args](https://github.com/pedsmoreira/battlecry/tree/master/examples/args): Working with arguments
 2.  [options](https://github.com/pedsmoreira/battlecry/tree/master/examples/options): Working with options
 3.  [multiple-templates](https://github.com/pedsmoreira/battlecry/tree/master/examples/multiple-templates): Working with multiple template files
 4.  [aliases](https://github.com/pedsmoreira/battlecry/tree/master/examples/aliases): Creating your own method aliases
-5.  [helpers](https://github.com/pedsmoreira/battlecry/tree/master/examples/helpers): Using helpers to share methods across generators
-6.  [call-other-generators](https://github.com/pedsmoreira/battlecry/tree/master/examples/call-other-generators): Using one generator to call multiple generators in a clean fashion
+5.  [helpers](https://github.com/pedsmoreira/battlecry/tree/master/examples/helpers): Using helpers to share methods across strategies
+6.  [call-other-strategies](https://github.com/pedsmoreira/battlecry/tree/master/examples/call-other-strategies): Using one strategy to call multiple strategies in a clean fashion
 7.  [exec](https://github.com/pedsmoreira/battlecry/tree/master/examples/exec): Executing a command line
-8.  [load](https://github.com/pedsmoreira/battlecry/tree/master/examples/load): Loading generators from a folder other than `battlecry/`
+8.  [load](https://github.com/pedsmoreira/battlecry/tree/master/examples/load): Loading strategies from a folder other than `battlecry/`

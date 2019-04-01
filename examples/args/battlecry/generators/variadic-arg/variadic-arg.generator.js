@@ -1,10 +1,10 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class VariadicArgGenerator extends Generator {
+export default class VariadicArgStrategy extends Strategy {
   config = {
     generate: {
       args: 'name ...pets', // Variadic args can also be optional: ...pets?
-      description: 'Example generator method that have a variadic arg'
+      description: 'Example strategy method that have a variadic arg'
     }
   };
 

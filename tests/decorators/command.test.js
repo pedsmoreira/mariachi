@@ -2,14 +2,14 @@ import { command, description } from 'battlecry';
 
 describe('@command', () => {
   describe('without args', () => {
-    class TestGenerator {
+    class TestStrategy {
       @command
       test() {}
     }
 
     it('registers the command', () => {
-      const generator = new TestGenerator();
-      expect(generator.config).toEqual({
+      const strategy = new TestStrategy();
+      expect(strategy.config).toEqual({
         test: {}
       });
     });
@@ -17,14 +17,14 @@ describe('@command', () => {
 });
 
 describe('with args', () => {
-  class TestGenerator {
+  class TestStrategy {
     @command({ args: 'name phone? ...others', description: 'Foo bar' })
     test() {}
   }
 
   it('registers the command with args', () => {
-    const generator = new TestGenerator();
-    expect(generator.config).toEqual({
+    const strategy = new TestStrategy();
+    expect(strategy.config).toEqual({
       test: {
         args: 'name phone? ...others',
         description: 'Foo bar'

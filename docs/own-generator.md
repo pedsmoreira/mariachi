@@ -1,7 +1,7 @@
-# Creating your own generators
+# Creating your own strategies
 
 ```bash
-cry g generator your_generator_name_here
+cry g strategy your_strategy_name_here
 ```
 
-This command will create a `battlecry/generators/your_generator_name_here`
+This command will create a `battlecry/strategies/your_strategy_name_here`

@@ -4,7 +4,7 @@ Both text files and binaries (such as images) are supported out of the box.
 
 ## Creating a new File instance
 
-In most cases you'll use the file helpers on the generator. But if you need to create it manually:
+In most cases you'll use the file helpers on the strategy. But if you need to create it manually:
 
 * `constructor(path: string, name?: string)`
 

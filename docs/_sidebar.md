@@ -2,10 +2,10 @@
 
   * [Getting Started](getting-started.md)
   * [Casex Naming](casex-naming.md)
-  * [Your own Generator](own-generator.md)
+  * [Your own Strategy](own-strategy.md)
 
 * **Guides**
-  * [Generator API](generator-api.md)
+  * [Strategy API](strategy-api.md)
   * [File API](file-api.md)
   * [Miscellaneous](miscellaneous.md)
   * [Customize battlecry-setup.js](customize-setup.md)

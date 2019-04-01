@@ -24,7 +24,7 @@ npm install --save-dev battlecry
 
 Battlecry has a very simple structure.
 
-`cry <method> <generator> arguments --options`
+`cry <method> <strategy> arguments --options`
 
 Battlecry can be used through both `battlecry` and it's short version `cry`.
 
@@ -40,12 +40,12 @@ This will perform four actions:
 
 * Create a `battlecry` folder on the root of your project
 * Add a `battlecry/battlecry-setup.js` that you can use to add special configurations
-* Create a generator called `component`
+* Create a strategy called `component`
 * Play the just created `component` with the arg `test-abc`
 
-You should now be able to see a file called `it-worked/components/test-abc.txt`. This file was created using the generator at `battlecry/generators/component.generator.js` folder.
+You should now be able to see a file called `it-worked/components/test-abc.txt`. This file was created using the strategy at `battlecry/strategies/component.strategy.js` folder.
 
-_Note_: BattleCry uses ES6 with lots of polyfill, so most things should ✨ _just work_ ✨ on your generator class.
+_Note_: BattleCry uses ES6 with lots of polyfill, so most things should ✨ _just work_ ✨ on your strategy class.
 
 ## Help
 

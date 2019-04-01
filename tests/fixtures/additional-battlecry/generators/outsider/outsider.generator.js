@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class OutsiderGenerator extends Generator {
+export default class OutsiderStrategy extends Strategy {
   config = {
     generate: {
       args: 'name',

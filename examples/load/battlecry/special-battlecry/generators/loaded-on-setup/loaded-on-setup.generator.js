@@ -1,6 +1,6 @@
-import { Generator } from 'battlecry';
+import { Strategy } from 'battlecry';
 
-export default class LoadedOnSetupGenerator extends Generator {
+export default class LoadedOnSetupStrategy extends Strategy {
   config = {
     generate: {
       args: 'name'
