@@ -1,4 +1,3 @@
-require('babel-polyfill');
 const { dirname } = require('path');
 const fs = require('fs');
 const babelRc = JSON.parse(fs.readFileSync(`${__dirname}/../.babelrc`, 'utf8'));
@@ -13,36 +12,27 @@ function ignore(filename) {
   return inNodeModules && !inBattlecryFolder;
 }
 
-function buildPath(type, name) {
-  const pkg = `babel-${type}-${name}`;
-  return dirname(require.resolve(`${pkg}/package.json`));
+function buildModule(type, value) {
+  let [name, options] = Array.isArray(value) ? value : [value];
+  if (!name.startsWith('@')) name = `babel-${type}-${name}`;
+
+  if (name === 'module-resolver') options.alias.battlecry = `${__dirname}/..`;
+
+  const path = dirname(require.resolve(`${name}/package.json`));
+  return options ? [path, options] : path;
 }
 
 function buildPresets() {
-  return babelRc.presets.map(preset => buildPath('preset', preset));
-}
-
-function buildModuleResolver() {
-  return [
-    buildPath('plugin', 'module-resolver'),
-    {
-      root: [`${process.cwd()}/battlecry`],
-      alias: {
-        battlecry: `${__dirname}/..`
-      }
-    }
-  ];
+  return babelRc.presets.map(preset => buildModule('preset', preset));
 }
 
 function buildPlugins() {
-  return babelRc.plugins.map(
-    plugin => (typeof plugin === 'string' ? buildPath('plugin', plugin) : buildModuleResolver())
-  );
+  return babelRc.plugins.map(plugin => buildModule('plugin', plugin));
 }
 
 require('@babel/register')({
   babelrc: false,
-  ignore: ignore,
+  ignore: [ignore],
   presets: buildPresets(),
   plugins: buildPlugins()
 });
