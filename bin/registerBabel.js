@@ -40,7 +40,7 @@ function buildPlugins() {
   );
 }
 
-require('babel-register')({
+require('@babel/register')({
   babelrc: false,
   ignore: ignore,
   presets: buildPresets(),
