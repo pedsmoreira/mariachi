@@ -30,7 +30,13 @@ export default class Strategy {
   path: string;
   battlecry: Battlecry;
   compatibility: string | string[];
+
   config: { [method: string]: CommandConfig };
+  static decoratedConfig = {};
+
+  constructor() {
+    this.config = this.constructor.decoratedConfig;
+  }
 
   get basename() {
     return basename(this.path);

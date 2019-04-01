@@ -1,5 +1,3 @@
-// @flow
-
 import program from 'commander';
 import { basename } from 'path';
 import fs from 'fs';
@@ -48,7 +46,6 @@ export default class Battlecry {
   load(path: string) {
     this.setup(path);
     glob(`${path}/strategies/*/*.strategy.js`).forEach(path => {
-      // $FlowFixMe
       const strategyClass = require(path).default;
       const name = basename(path, '.strategy.js');
 

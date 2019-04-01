@@ -1,12 +1,10 @@
-// @flow
-
 import casex from 'casex';
 
 function config(target: Object, key: string) {
-  if (!target.config) target.config = {};
-  if (!target.config[key]) target.config[key] = {};
+  const klass = target.constructor;
+  klass.decoratedConfig[key] = {};
 
-  return target.config[key];
+  return klass.decoratedConfig[key];
 }
 
 export function command(targetOrProperties: any, methodName: string, descriptor: PropertyDescriptor<*>) {
