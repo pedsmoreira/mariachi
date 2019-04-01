@@ -17,11 +17,10 @@ function buildModule(type, value) {
   if (!name.startsWith('@')) name = `babel-${type}-${name}`;
 
   if (name === 'babel-plugin-module-resolver') {
-    options.root = [`${process.cwd()}/battlecry`];
-    options.alias.battlecry = `${__dirname}/../src/index.ts`;
-  }
-
-  if (name === '@babel/plugin-transform-runtime') {
+    options.root = `${process.cwd()}/battlecry`;
+    options.extensions = ['.js', '.ts'];
+    options.alias.battlecry = `${__dirname}/../src`;
+  } else if (name === '@babel/plugin-transform-runtime') {
     options = { absoluteRuntime: `${__dirname}/../@babel/runtime` };
   }
 

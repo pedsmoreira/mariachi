@@ -20,11 +20,13 @@ class Log {
     if (this.indentation) this.indentation -= INDENTATION;
   }
 
-  log(chalker: Function, message: string) {
-    const spaces = new Array(this.indentation).fill(' ').join('');
+  get spaces() {
+    return new Array(this.indentation).fill(' ').join('');
+  }
 
+  log(chalker: Function, message: string) {
     this.hasEmptyLine = false;
-    console.log(chalker(`${spaces}${message}`));
+    console.log(chalker(`${this.spaces}${message}`));
   }
 
   default(message: string) {

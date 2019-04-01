@@ -45,7 +45,11 @@ export default class Battlecry {
 
   load(path: string) {
     this.setup(path);
-    glob(`${path}/strategies/*/*.strategy.{js,ts}`).forEach(path => {
+    this.loadStrategies(`${path}/strategies/*`);
+  }
+
+  loadStrategies(path: string) {
+    glob(`${path}/**/*.strategy.{js,ts}`).forEach(path => {
       const strategyClass = require(path).default;
       const name = basename(path.split('.strategy.')[0]);
 
@@ -55,15 +59,13 @@ export default class Battlecry {
   }
 
   setup(path: string) {
-    const setupPath = `${path}/battlecry-setup.js`;
-    const setupExists = fs.existsSync(`${setupPath}`);
+    const setupPath = glob(`${path}/battlecry-setup.{js,ts}`)[0];
+    if (!setupPath) return;
 
-    if (setupExists) {
-      const fn: Function = require(setupPath).default;
+    const fn: Function = require(setupPath).default;
 
-      if (fn) fn(this);
-      else logger.warn(`Skipping battlecry-setup.js in folder ${basename(path)} - empty file`);
-    }
+    if (fn) fn(this);
+    else logger.warn(`Skipping battlecry-setup.js in folder ${basename(path)} - empty file`);
   }
 
   alias(method: string): string | null {

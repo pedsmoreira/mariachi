@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
+import { prompt } from 'enquirer';
 
 import File from './File';
 import Battlecry from './Battlecry';
@@ -75,6 +76,17 @@ export default class Strategy {
 
   load() {
     this.logWarn('Load', 'Method not implemented');
+  }
+
+  async ask(question: string, options: any = {}) {
+    const response = await prompt({
+      type: 'input',
+      ...options,
+      name: 'question',
+      message: logger.spaces + question
+    });
+
+    return response['question'];
   }
 
   async play(methodName: string): Promise<any> {
