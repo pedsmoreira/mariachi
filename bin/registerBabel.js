@@ -16,7 +16,10 @@ function buildModule(type, value) {
   let [name, options] = Array.isArray(value) ? value : [value];
   if (!name.startsWith('@')) name = `babel-${type}-${name}`;
 
-  if (name === 'module-resolver') options.alias.battlecry = `${__dirname}/..`;
+  if (name === 'babel-plugin-module-resolver') {
+    options.root = [`${process.cwd()}/battlecry`];
+    options.alias.battlecry = `${__dirname}/..`;
+  }
 
   const path = dirname(require.resolve(`${name}/package.json`));
   return options ? [path, options] : path;

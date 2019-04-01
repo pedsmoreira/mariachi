@@ -62,7 +62,6 @@ export default class Battlecry {
     const setupExists = fs.existsSync(`${setupPath}`);
 
     if (setupExists) {
-      // $FlowFixMe
       const fn: Function = require(setupPath).default;
 
       if (fn) fn(this);

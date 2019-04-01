@@ -1,5 +1,3 @@
-// @flow
-
 import { Battlecry } from 'battlecry';
 
 export default function setup(battlecry: Battlecry) {
