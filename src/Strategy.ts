@@ -79,7 +79,6 @@ export default class Strategy {
 
   async play(methodName: string): Promise<any> {
     try {
-      // $FlowFixMe
       const method: Function = this[methodName];
       if (!method) this.throwMethodNotImplemented(methodName);
 

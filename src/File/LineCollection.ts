@@ -3,7 +3,6 @@ import withMethodMissing from './withMethodMissing';
 
 export type LineCollectionType = Line & Array<Line> & LineCollection;
 
-// @ts-ignore
 @withMethodMissing
 export default class LineCollection {
   // @ts-ignore
@@ -56,20 +55,14 @@ export default class LineCollection {
     });
 
     this.lines.forEach((line, index) => line.move(indexes[index]));
-
-    // $FlowFixMe
     return this._proxy;
   }
 
   trailing(str: string): LineCollectionType {
-    // $FlowFixMe
     this._proxy.rightPad(str).last.rightUnpad(str);
-
-    // $FlowFixMe
     return this._proxy;
   }
 
-  // $FlowFixMe
   *[Symbol.iterator]() {
     yield* this.lines;
   }
@@ -80,13 +73,11 @@ export default class LineCollection {
   }
 
   _callArrayProperty(name: string, args: any[]) {
-    // $FlowFixMe
     return this.lines[name](...args);
   }
 
   _callEachInArrayMethod(name: string, args: any[]) {
     this.lines.forEach(line => {
-      // $FlowFixMe
       const fn: Function = line[name];
       if (!fn) throw new Error(`Method ${name} does not exist in Line`);
 

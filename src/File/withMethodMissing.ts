@@ -1,4 +1,4 @@
-export default function withMethodMissing(Klass: any) {
+function withMethodMissingFn(Klass: any) {
   return class extends Klass {
     // @ts-ignore
     _proxy: Proxy<Klass>;
@@ -24,3 +24,6 @@ export default function withMethodMissing(Klass: any) {
     };
   };
 }
+
+const withMethodMissing: any = withMethodMissingFn;
+export default withMethodMissing;
