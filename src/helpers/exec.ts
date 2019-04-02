@@ -38,7 +38,11 @@ export default async function exec(command: string, options: ExecOptions = {}): 
     let error;
 
     childProcess.stdout.on('data', function(data) {
-      const lines = data.toString().split(File.EOL);
+      const lines = data
+        .toString()
+        .split(File.EOL)
+        .filter(line => line.trim());
+
       messages.push(...lines);
       lines.forEach(line => logger.default(line));
     });
