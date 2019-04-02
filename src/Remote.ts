@@ -4,6 +4,7 @@ import RemoteFile from './File/RemoteFile';
 import battleCasex from 'battle-casex';
 
 import { logger } from './helpers';
+import { memoize } from './decorators';
 
 type Props = {
   host: string;
@@ -32,6 +33,10 @@ export default class Remote {
     RemoteFile._remote = this;
   }
 
+  /*
+   * Ssh config
+   */
+
   get sshConfig() {
     return {
       host: this.host,
@@ -48,9 +53,31 @@ export default class Remote {
     return this._sshClient;
   }
 
+  @memoize
   get privateKeyFile() {
     return new File(this.privateKey);
   }
+
+  /*
+   * Connection
+   */
+
+  connect(): this {
+    this.sshClient.connect({
+      port: this.port,
+      ...this.sshConfig
+    });
+
+    return this;
+  }
+
+  exec(command: string) {
+    return this.sshClient.exec(command);
+  }
+
+  /*
+   * File management
+   */
 
   glob(pattern: string, name?: string | null): RemoteFile[] {
     const response = this.exec(`ls ${battleCasex(pattern, name)}`);
@@ -73,29 +100,20 @@ export default class Remote {
     return this.files[0] || RemoteFile;
   }
 
-  connect(): this {
-    this.sshClient.connect({
-      port: this.port,
-      ...this.sshConfig
-    });
-
-    return this;
-  }
-
-  exec(command: string) {
-    return this.sshClient.exec(command);
-  }
+  /*
+   * Config local
+   */
 
   configLocal() {
-    this.configSshKey();
-    this.configSshHost();
+    this.configLocalSshKey();
+    this.configLocalSshHost();
   }
 
-  configSshKey() {
+  configLocalSshKey() {
     this.privateKeyFile.saveAs(`~/.ssh/`).chmod(0o400);
   }
 
-  configSshHost() {
+  configLocalSshHost() {
     const file = this.file(`~/.ssh/config`);
     file.append([
       `Host ${this.host}`,
