@@ -19,7 +19,7 @@ export default class GitDownload {
 
   async handle() {
     return new Promise((resolve, reject) => {
-      logger.success(`☁️  Downloading ${this.repository} repository`);
+      logger.success(`☁️ Downloading ${this.repository} repository`);
       downloadGitRepo(this.repository, this.tmpPath, err => {
         if (err) return reject(err);
 
@@ -58,7 +58,7 @@ export default class GitDownload {
   }
 
   logBattlecryFolderGuessed() {
-    if (this.hasBattlecry) logger.success('🧠  Found a battlecry/ folder at the selected directory');
+    if (this.hasBattlecry) logger.success('🧠 Found a battlecry/ folder at the selected directory');
   }
 
   logCopyingPath() {
@@ -67,6 +67,6 @@ export default class GitDownload {
     if (this.hasBattlecry) logPath = join(logPath, 'battlecry');
     if (!logPath.endsWith('/')) logPath += '/';
 
-    logger.success(`📋  Copying all files from repository dir: ${logPath}`);
+    logger.action(`📋 Copying all files from repository dir: ${logPath}`);
   }
 }

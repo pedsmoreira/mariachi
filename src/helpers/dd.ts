@@ -3,7 +3,7 @@ import File from '../File';
 import logger from './logger';
 
 export default function dd(error: Error) {
-  logger.error(`❌  Error: ${error.message}`);
+  logger.error(`❌ Error: ${error.message}`);
   logger.emptyLine();
 
   const file = new File('battlecry-error.log');
@@ -11,7 +11,7 @@ export default function dd(error: Error) {
   file.save();
 
   logger.emptyLine();
-  logger.default('🗄  Please check the file battlecry-error.log for the full stack');
+  logger.default('🗄 Please check the file battlecry-error.log for the full stack');
   logger.emptyLine();
   process.exit();
 }

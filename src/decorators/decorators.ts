@@ -2,7 +2,7 @@ function config(target: any, key: string) {
   const klass = target.constructor;
 
   if (!klass.decoratedConfig) klass.decoratedConfig = {};
-  klass.decoratedConfig[key] = {};
+  if (!klass.decoratedConfig[key]) klass.decoratedConfig[key] = {};
 
   return klass.decoratedConfig[key];
 }
@@ -24,6 +24,7 @@ function commandFn(targetOrProperties: any, methodName: string, descriptor: Prop
 export function option(name: any, details: Object = {}) {
   return (target: any, methodName: string, descriptor: any) => {
     const methodConfig = config(target, methodName);
+
     if (!methodConfig.options) methodConfig.options = {};
     methodConfig.options[name] = details;
 

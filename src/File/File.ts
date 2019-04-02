@@ -132,8 +132,8 @@ export default class File {
       fs.writeFileSync(path, battleCasex(this.text, name));
     }
 
-    if (creating) logger.success(`✅  File created: ${path}`);
-    else logger.success(`☑️  File updated: ${path}`);
+    if (creating) logger.success(`✅ File created: ${path}`);
+    else logger.success(`☑️ File updated: ${path}`);
 
     return new File(path);
   }
@@ -160,7 +160,7 @@ export default class File {
 
   delete(): void {
     this.self.delete(this.path);
-    logger.success(`🔥  File deleted: ${this.path}`);
+    logger.success(`🔥 File deleted: ${this.path}`);
   }
 
   chmod(mode: number): this {
@@ -189,7 +189,7 @@ export default class File {
   }
 
   set text(text: string) {
-    this.setLines( text.split(LINE_BREAK));
+    this.setLines(text.split(LINE_BREAK));
   }
 
   line(index: number): Line {

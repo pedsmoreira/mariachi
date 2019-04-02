@@ -9,9 +9,9 @@ import Option, { OptionProps } from './Option';
 import CommandArg from './Arg';
 
 export type CommandConfig = {
-  args?: string,
-  options?: { [key: string]: OptionProps },
-  description?: string
+  args?: string;
+  options?: { [key: string]: OptionProps };
+  description?: string;
 };
 
 export default class Command {
@@ -34,6 +34,10 @@ export default class Command {
   get options(): Option[] {
     const options = this.config.options || {};
     return Object.keys(options).map(name => new Option(name, options[name]));
+  }
+
+  option(name: string) {
+    return this.options.find(option => option.name === name);
   }
 
   get commanderArgs(): string {
@@ -68,9 +72,7 @@ export default class Command {
   }
 
   register(): void {
-    const cmd = program
-      .command(this.commanderInstruction, '', { noHelp: true })
-      .action(this.commanderAction as any);
+    const cmd = program.command(this.commanderInstruction, '', { noHelp: true }).action(this.commanderAction as any);
 
     this.options.forEach(option => cmd.option(option.commanderFlags, option.description, option.defaultArg));
   }

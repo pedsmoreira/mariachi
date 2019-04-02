@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import { logger } from '../helpers';
 
 export type OptionProps = {
-  description: string,
-  alias?: string,
-  arg?: 'required' | 'optional',
-  defaultArg?: string
+  description: string;
+  alias?: string;
+  arg?: 'required' | 'optional';
+  defaultArg?: string;
 };
 
 export default class Option {
@@ -24,9 +24,21 @@ export default class Option {
     this.defaultArg = properties.defaultArg;
   }
 
+  get argRequired() {
+    return this.arg === 'required';
+  }
+
+  get argOptional() {
+    return this.arg === 'optional';
+  }
+
+  get noArgs() {
+    return !this.arg;
+  }
+
   get commanderArg(): string {
-    if (this.arg === 'required') return '<value>';
-    if (this.arg === 'optional') return '[value]';
+    if (this.argRequired) return '<value>';
+    if (this.argOptional) return '[value]';
 
     return '';
   }

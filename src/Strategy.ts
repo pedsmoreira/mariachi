@@ -1,5 +1,5 @@
 import { join, basename, dirname } from 'path';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
 import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
@@ -19,6 +19,17 @@ type ExecOptions = {
   privateKey?: string;
 };
 
+type ExecResponse = {
+  success: boolean;
+  error?: string;
+  messages: string[];
+  code: number;
+};
+
+type AskOptions = {
+  [key: string]: any;
+};
+
 export default class Strategy {
   options: Options;
   args: Args;
@@ -31,6 +42,8 @@ export default class Strategy {
   path: string;
   battlecry: Battlecry;
   compatibility: string | string[];
+
+  currentCommand: Command;
 
   config: { [method: string]: CommandConfig };
   static decoratedConfig: { [method: string]: CommandConfig };
@@ -47,6 +60,10 @@ export default class Strategy {
     return Object.keys(this.config || {}).map(method => new Command(this, method));
   }
 
+  command(name: string) {
+    return this.commands.find(command => command.name === name);
+  }
+
   register(): void {
     this.logRegistrationWarnings();
     this.commands.forEach(command => command.register());
@@ -61,24 +78,51 @@ export default class Strategy {
     return false;
   }
 
-  onLoad() {}
+  onLoad() {
+    this.logWarn('OnLoad', 'Method not implemented');
+  }
 
   /*
    * Actions
    */
 
-  require(...strategies: string[]) {
-    return this.strategies(...strategies).map(strategy => {
-      strategy.load();
-      return strategy;
-    });
+  async require(...strategyNames: string[]) {
+    const strategies = this.strategies(...strategyNames);
+    const responses = [];
+
+    for (let i = 0; i < strategies.length; i++) {
+      const strategy = strategies[i];
+
+      let response: any = strategy.load();
+      if (response) response = await response;
+
+      responses.push(response);
+    }
+
+    return responses;
   }
 
-  load() {
-    this.logWarn('Load', 'Method not implemented');
+  async load(options: any = {}) {
+    if (!options.silent) {
+      logger.default(`📦 Loading strategy ${this.name}`);
+      logger.addIndentation();
+    }
+
+    if (!this.loaded) {
+      const response: any = this.onLoad();
+      if (response) await response;
+
+      if (!options.silent) {
+        logger.success(`🚚 ${this.name} loaded`);
+      }
+    } else {
+      logger.success(`🗃  ${this.name} was already loaded`);
+    }
+
+    if (!options.silent) logger.removeIndentation();
   }
 
-  async ask(question: string, options: any = {}) {
+  async ask(question: string, options: AskOptions = {}) {
     const response = await prompt({
       type: 'input',
       ...options,
@@ -89,20 +133,38 @@ export default class Strategy {
     return response['question'];
   }
 
+  async askOption(name: string, options: AskOptions = {}) {
+    if (this.options[name] !== undefined) return this.options[name];
+
+    const option = this.currentCommand.option(name);
+    if (!option) return this.logWarn('Ask Option', `Option "${name}" not found`);
+
+    const type = option.noArgs ? 'toggle' : 'input';
+    const response = await this.ask(options.message || `${name}: `, { type, ...options });
+    this.options[name] = response;
+
+    return response;
+  }
+
   async play(methodName: string): Promise<any> {
     try {
       const method: Function = this[methodName];
       if (!method) this.throwMethodNotImplemented(methodName);
 
-      const command = this.commands.find(command => command.name === methodName);
+      const command = this.command(methodName);
       if (!command) this.throwMethodNotRegistered(methodName);
 
       logger.emptyLine();
-      logger.success(`🥁  Playing: ${methodName} ${this.name}`);
+      logger.action(`🥁 Playing: ${methodName} ${this.name}`);
       logger.addIndentation();
+
+      const previousCommand = this.currentCommand;
+      this.currentCommand = command;
 
       const response = method.bind(this)();
       if (response) await response;
+
+      this.currentCommand = previousCommand;
 
       logger.removeIndentation();
       logger.emptyLine();
@@ -134,7 +196,7 @@ export default class Strategy {
   delete(path: string, name?: string): void {
     path = battleCasex(path, name);
     rimraf.sync(path);
-    logger.success(`🔥  Path deleted: ${path}`);
+    logger.success(`🔥 Path deleted: ${path}`);
   }
 
   /*
@@ -206,14 +268,38 @@ export default class Strategy {
    * Other helpers
    */
 
-  exec(command: string, options?: ExecOptions): string | Buffer {
-    logger.success(`🏃  Exec command: ${command}`);
+  async exec(command: string, options: ExecOptions = {}): Promise<ExecResponse> {
+    logger.action(`🏃 Exec command: ${command}`);
     logger.addIndentation();
 
     if (options.privateKey) command = `ssh-agent $(ssh-add ${options.privateKey}; ${command})`;
     if (options.path) command = `cd ${options.path}; ${command}`;
 
-    const result = execSync(command, { stdio: 'inherit' });
+    const result: any = await new Promise(resolve => {
+      const childProcess = exec(command);
+      let success = true;
+      const messages = [];
+      let error;
+
+      childProcess.stdout.on('data', function(data) {
+        const lines = data.toString().split(File.EOL);
+        messages.push(...lines);
+        lines.forEach(line => logger.default(line));
+      });
+
+      childProcess.stderr.on('data', function(data) {
+        error = data.toString();
+        error.split(File.EOL).forEach(line => logger.error(line));
+        success = false;
+      });
+
+      childProcess.on('exit', function(code) {
+        logger[success ? 'success' : 'error']('🔚 Exec exited with status code ' + code.toString());
+
+        const response: ExecResponse = { success, code, error, messages };
+        resolve(response);
+      });
+    });
 
     logger.removeIndentation();
     return result;
@@ -251,6 +337,10 @@ export default class Strategy {
         }'`
       );
     }
+  }
+
+  log(message: string, method: 'default' | 'success' | 'action' | 'warn' | 'error' = 'default') {
+    logger[method](message);
   }
 
   logWarn(label: string, message: string) {

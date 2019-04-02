@@ -30,11 +30,15 @@ class Log {
   }
 
   default(message: string) {
-    return this.log(chalkedMessage => chalkedMessage, message);
+    return this.log(chalk.white, message);
   }
 
   success(message: string) {
     this.log(chalk.hex(this.BRASIL_GREEN), message);
+  }
+
+  action(message: string) {
+    this.log(chalk.whiteBright, message);
   }
 
   warn(message: string) {
