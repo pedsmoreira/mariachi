@@ -29,6 +29,15 @@ export default class Remote {
     }
 
     this.connect();
+    RemoteFile._remote = this;
+  }
+
+  get sshConfig() {
+    return {
+      host: this.host,
+      username: this.username,
+      privateKey: this.privateKeyFile.text
+    };
   }
 
   get sshClient() {
@@ -66,10 +75,8 @@ export default class Remote {
 
   connect(): this {
     this.sshClient.connect({
-      host: this.host,
       port: this.port,
-      username: this.username,
-      privateKey: this.privateKeyFile.text
+      ...this.sshConfig
     });
 
     return this;
@@ -79,19 +86,23 @@ export default class Remote {
     return this.sshClient.exec(command);
   }
 
-  configLocal() {}
+  configLocal() {
+    this.configSshKey();
+    this.configSshHost();
+  }
 
   configSshKey() {
     this.privateKeyFile.saveAs(`~/.ssh/`).chmod(0o400);
   }
 
-  configSsshHost() {
+  configSshHost() {
     const file = this.file(`~/.ssh/config`);
     file.append([
       `Host ${this.host}`,
       `  HostName ${this.ip}`,
+      `  Port ${this.port}`,
+      `  User ${this.username}`,
       `  IdentityFile ~/.ssh/${this.host}`,
-      '  User root',
       ''
     ]);
 

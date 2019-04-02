@@ -4,6 +4,7 @@ import { resolve, basename, dirname, extname } from 'path';
 import { EOL } from 'os';
 import { isBinaryFileSync } from 'isbinaryfile';
 import battleCasex from 'battle-casex';
+import tmp from 'tmp';
 const homedir = require('os').homedir();
 
 import { logger } from '../helpers';
@@ -25,6 +26,10 @@ export default class File {
 
   constructor(path: string, name?: string) {
     this.path = battleCasex(path, name);
+  }
+
+  static get tmp() {
+    return new File(tmp.tmpNameSync());
   }
 
   existing(path: string, name?: string): File {
@@ -65,6 +70,10 @@ export default class File {
 
   static read(path: string): string {
     return fs.readFileSync(path, 'utf8');
+  }
+
+  static require(path: string): any {
+    return require(path);
   }
 
   static saveBinary(src: string, dest: string) {
