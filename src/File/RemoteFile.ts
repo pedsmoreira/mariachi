@@ -9,6 +9,11 @@ export default class RemoteFile extends File {
   _tmpLocal: File;
   static _remote: Remote;
 
+  constructor(remote: Remote, path: string, name?: string) {
+    super(path, name);
+    this.remote = remote;
+  }
+
   static homedPath(path: string) {
     return path;
   }
@@ -19,11 +24,11 @@ export default class RemoteFile extends File {
   }
 
   static read(path: string) {
-    return new RemoteFile(path).tmpLocal.text;
+    return new RemoteFile(this._remote, path).tmpLocal.text;
   }
 
   static require(path: string) {
-    return require(new RemoteFile(path).tmpLocal.path);
+    return require(new RemoteFile(this._remote, path).tmpLocal.path);
   }
 
   static saveBinary(src: string, path: string) {

@@ -13,8 +13,6 @@ import glob from './glob';
 
 import Line from './Line';
 import LineCollection, { LineCollectionType } from './LineCollection';
-import Remote from '../Remote';
-import RemoteFile from './RemoteFile';
 
 const LINE_BREAK = /\r?\n/;
 
@@ -25,7 +23,7 @@ export default class File {
   _lines: LineCollectionType;
 
   constructor(path: string, name?: string) {
-    this.path = battleCasex(path, name);
+    this.path = battleCasex(this.self.homedPath(path), name);
   }
 
   static get tmp() {
@@ -145,7 +143,7 @@ export default class File {
     path = this.self.homedPath(battleCasex(path, name));
 
     const creating = !this.self.exists(path);
-    this.self.createDir(dirname(path));
+    this.self.ensureDir(dirname(path));
 
     if (this.binary) {
       this.self.saveBinary(this.path);
@@ -154,14 +152,9 @@ export default class File {
     }
 
     if (creating) logger.success(`✅ ${this.self.name} created: ${path}`);
-    else logger.success(`☑️ ${this.self.name} updated: ${path}`);
+    else logger.success(`☑️  ${this.self.name} updated: ${path}`);
 
     return new File(path);
-  }
-
-  saveAsRemote(remote: Remote, path: string, name?: string): RemoteFile {
-    // @ts-ignore
-    return null;
   }
 
   move(path: string, name?: string | null): this {
@@ -200,6 +193,10 @@ export default class File {
 
   read() {
     this.text = this.exists ? this.self.read(this.path) : '';
+  }
+
+  require() {
+    return this.self.require(this.absolutePath);
   }
 
   get text(): string {

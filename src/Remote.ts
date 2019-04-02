@@ -23,7 +23,7 @@ type ExecResponse = {
 export default class Remote {
   host: string;
   ip: string;
-  username: string;
+  username: string = 'root';
   privateKey: string;
   port: number = 22;
 
@@ -36,14 +36,6 @@ export default class Remote {
       Object.assign(this, props);
     }
 
-    this._readyPromise = new Promise(resolve => {
-      this.sshClient.on('ready', function() {
-        console.log('Client :: ready');
-        resolve();
-      });
-    });
-
-    this.connect();
     RemoteFile._remote = this;
   }
 
@@ -61,7 +53,21 @@ export default class Remote {
 
   @memoize
   get sshClient() {
-    return new Client();
+    const client = new Client();
+
+    this._readyPromise = new Promise(resolve => {
+      client.on('ready', function() {
+        console.log('Client :: ready');
+        resolve();
+      });
+    });
+
+    client.connect({
+      port: this.port,
+      ...this.sshConfig
+    });
+
+    return client;
   }
 
   @memoize
@@ -73,17 +79,10 @@ export default class Remote {
    * Connection
    */
 
-  connect(): this {
-    this.sshClient.connect({
-      port: this.port,
-      ...this.sshConfig
-    });
-
-    return this;
-  }
-
   async exec(command: string): Promise<ExecResponse> {
+    if (!this._readyPromise) this.sshClient; // Initiate client
     await this._readyPromise;
+
     logger.addIndentation();
 
     const result: any = await new Promise(resolve => {
@@ -92,7 +91,7 @@ export default class Remote {
         stream
           .on('close', function(code, signal) {
             console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-            resolve();
+            resolve({});
           })
           .on('data', function(data) {
             console.log('STDOUT: ' + data);
@@ -113,7 +112,7 @@ export default class Remote {
 
   async files(pattern: string, name?: string): Promise<RemoteFile[]> {
     const response = await this.exec(`ls ${battleCasex(pattern, name)}`);
-    return response.messages.map(path => new RemoteFile(path));
+    return response.messages.map(path => new RemoteFile(this, path));
   }
 
   async file(pattern: string, name?: string): Promise<RemoteFile> {
@@ -122,10 +121,17 @@ export default class Remote {
     if (!files.length) {
       const path = battleCasex(pattern, name);
       this.logLabeledWarn('File not found', `A new RemoteFile instance was created for path "${path}"`);
-      return new RemoteFile(path);
+      return new RemoteFile(this, path);
     }
 
     return this.files[0] || RemoteFile;
+  }
+
+  async saveFile(file: File, path: string): Promise<File> {
+    if (path.endsWith('/')) path += file.filename;
+
+    await RemoteFile.saveBinary(file.path, path);
+    return new RemoteFile(this, path);
   }
 
   /*
@@ -138,7 +144,7 @@ export default class Remote {
   }
 
   configLocalSshKey() {
-    this.privateKeyFile.saveAs(`~/.ssh/`).chmod(0o400);
+    this.privateKeyFile.saveAs(`~/.ssh/`);
   }
 
   configLocalSshHost() {

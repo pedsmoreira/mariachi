@@ -11,7 +11,7 @@ export default function dd(error: Error) {
   file.save();
 
   logger.emptyLine();
-  logger.default('🗄 Please check the file battlecry-error.log for the full stack');
+  logger.default('🗄  Please check the file battlecry-error.log for the full stack');
   logger.emptyLine();
   process.exit();
 }

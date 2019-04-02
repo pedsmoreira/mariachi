@@ -8,6 +8,7 @@ import { prompt } from 'enquirer';
 import File from './File';
 import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
+import Remote from './Remote';
 
 import { dd, logger } from './helpers';
 
@@ -226,7 +227,9 @@ export default class Strategy {
    * Remote helpers
    */
 
-  remote(_config: any): any {}
+  remote(config: any): any {
+    return new Remote(config);
+  }
 
   /*
    * Chain helpers
