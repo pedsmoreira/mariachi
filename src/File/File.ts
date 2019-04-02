@@ -146,9 +146,9 @@ export default class File {
     this.self.ensureDir(dirname(path));
 
     if (this.binary) {
-      this.self.saveBinary(this.path);
+      this.self.saveBinary(path);
     } else {
-      this.self.saveText(this.path, battleCasex(this.text, name));
+      this.self.saveText(path, battleCasex(this.text, name));
     }
 
     if (creating) logger.success(`✅ ${this.self.name} created: ${path}`);
@@ -254,12 +254,17 @@ export default class File {
     return this.all(search, name, { limit: 1 })[0] || this.stubSearch(search, name);
   }
 
-  first(search: string, name?: string) {
+  first(search: string, name?: string): Line {
     return this.find(search, name);
   }
 
-  replace(search: string, replacement: string) {
+  replace(search: string, replacement: string): this {
     this.find(search).replace(search, replacement);
+    return this;
+  }
+
+  replaceAll(search: string, replacement: string): this {
+    this.all(search).replace(search, replacement);
     return this;
   }
 
