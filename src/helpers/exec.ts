@@ -48,8 +48,14 @@ export default async function exec(command: string, options: ExecOptions = {}): 
     });
 
     childProcess.stderr.on('data', function(data) {
-      error = data.toString();
-      error.split(File.EOL).forEach(line => logger.error(line));
+      const lines = data
+        .toString()
+        .split(File.EOL)
+        .filter(line => line.trim());
+
+      error = lines.join(File.EOL);
+
+      lines.forEach(line => logger.error(line));
       success = false;
     });
 
