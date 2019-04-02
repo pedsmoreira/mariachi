@@ -1,6 +1,7 @@
 import Remote from '../Remote';
 import File from './File';
 import scp2 from 'scp2';
+import { logger } from '../helpers';
 
 export default class RemoteFile extends File {
   remote: Remote;
@@ -12,8 +13,9 @@ export default class RemoteFile extends File {
     return path;
   }
 
-  static glob(pattern: string, name?: string | null): RemoteFile[] {
-    return this._remote.glob(pattern, name);
+  static glob(pattern: string, name?: string | null) {
+    logger.warn('.glob not supported on RemoteFile');
+    return [];
   }
 
   static read(path: string) {
