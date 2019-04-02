@@ -1,5 +1,4 @@
 import { join, basename, dirname } from 'path';
-import { exec } from 'child_process';
 import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
@@ -10,22 +9,10 @@ import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
 import Remote from './Remote';
 
-import { dd, logger } from './helpers';
+import { dd, exec, ExecOptions, logger } from './helpers';
 
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
-
-type ExecOptions = {
-  path?: string;
-  privateKey?: string;
-};
-
-type ExecResponse = {
-  success: boolean;
-  error?: string;
-  messages: string[];
-  code: number;
-};
 
 type AskOptions = {
   [key: string]: any;
@@ -275,50 +262,8 @@ export default class Strategy {
    * Other helpers
    */
 
-  async exec(command: string, options: ExecOptions = {}): Promise<ExecResponse> {
-    let logMessage = `🏃 Exec command: \`${command}\``;
-
-    if (options.privateKey) {
-      logMessage += ` with private key "${basename(options.privateKey)}"`;
-      command = `ssh-agent $(ssh-add ${options.privateKey}; ${command})`;
-    }
-
-    if (options.path) {
-      logMessage += ` in path "${options.path}"`;
-      command = `cd ${options.path}; ${command}`;
-    }
-
-    logger.action(logMessage);
-    logger.addIndentation();
-
-    const result: any = await new Promise(resolve => {
-      const childProcess = exec(command);
-      let success = true;
-      const messages = [];
-      let error;
-
-      childProcess.stdout.on('data', function(data) {
-        const lines = data.toString().split(File.EOL);
-        messages.push(...lines);
-        lines.forEach(line => logger.default(line));
-      });
-
-      childProcess.stderr.on('data', function(data) {
-        error = data.toString();
-        error.split(File.EOL).forEach(line => logger.error(line));
-        success = false;
-      });
-
-      childProcess.on('exit', function(code) {
-        logger[success ? 'success' : 'error']('🔚 Exec exited with status code ' + code.toString());
-
-        const response: ExecResponse = { success, code, error, messages };
-        resolve(response);
-      });
-    });
-
-    logger.removeIndentation();
-    return result;
+  exec(command: string, options: ExecOptions = {}) {
+    exec(command, options);
   }
 
   /*

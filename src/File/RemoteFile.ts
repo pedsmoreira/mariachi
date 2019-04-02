@@ -1,6 +1,5 @@
 import Remote from '../Remote';
 import File from './File';
-import scp2 from 'scp2';
 import { logger } from '../helpers';
 
 export default class RemoteFile extends File {
@@ -31,12 +30,8 @@ export default class RemoteFile extends File {
     return require(new RemoteFile(this._remote, path).tmpLocal.path);
   }
 
-  static saveBinary(src: string, path: string) {
-    const dest = { ...this._remote.sshConfig, path };
-
-    scp2.scp(src, dest, function(err) {
-      console.log('error', err);
-    });
+  static saveBinary(src: string, dest: string) {
+    return this._remote.upload(src, dest);
   }
 
   static saveText(path: string, text: string) {
@@ -63,14 +58,7 @@ export default class RemoteFile extends File {
 
   get tmpLocal(): File {
     const tmp = File.tmp;
-
-    const src = { ...this.remote.sshConfig, path: this.path };
-    const dest = tmp.path;
-
-    scp2.scp(src, dest, function(err) {
-      console.log('error', err);
-    });
-
+    this.remote.download(this.path, tmp.path);
     return tmp;
   }
 

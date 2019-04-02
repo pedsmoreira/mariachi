@@ -1,27 +1,21 @@
-import { Client } from 'ssh2';
+import { basename } from 'path';
+
 import File from './File';
 import RemoteFile from './File/RemoteFile';
 import battleCasex from 'battle-casex';
 
-import { logger } from './helpers';
+import { logger, exec, ExecResponse } from './helpers';
 import { memoize } from './decorators';
 
 type Props = {
   host: string;
   ip: string;
   username: string;
-  privateKey: string;
-};
-
-type ExecResponse = {
-  success: boolean;
-  error?: string;
-  messages: string[];
-  code: number;
+  privateKey: File | string;
 };
 
 export default class Remote {
-  host: string;
+  name: string;
   ip: string;
   username: string = 'root';
   privateKey: string;
@@ -31,43 +25,13 @@ export default class Remote {
 
   constructor(props: Props | 'string') {
     if (typeof props === 'string') {
-      this.host = props;
+      this.name = props;
     } else {
+      if (props.privateKey instanceof File) props.privateKey = props.privateKey.path;
       Object.assign(this, props);
     }
 
     RemoteFile._remote = this;
-  }
-
-  /*
-   * Ssh config
-   */
-
-  get sshConfig() {
-    return {
-      host: this.host,
-      username: this.username,
-      privateKey: this.privateKeyFile.text
-    };
-  }
-
-  @memoize
-  get sshClient() {
-    const client = new Client();
-
-    this._readyPromise = new Promise(resolve => {
-      client.on('ready', function() {
-        console.log('Client :: ready');
-        resolve();
-      });
-    });
-
-    client.connect({
-      port: this.port,
-      ...this.sshConfig
-    });
-
-    return client;
   }
 
   @memoize
@@ -76,34 +40,62 @@ export default class Remote {
   }
 
   /*
-   * Connection
+   * SSH
    */
 
-  async exec(command: string): Promise<ExecResponse> {
-    if (!this._readyPromise) this.sshClient; // Initiate client
-    await this._readyPromise;
+  get sshSignature() {
+    if (this.name) return this.name;
+    return `-p ${this.port} -i ${this.privateKey} ${this.username}@${this.ip}`;
+  }
 
+  async scp(srcValue: File | string, destValue: File | string, messageBuilder: Function) {
+    const src = srcValue instanceof File ? srcValue.path : srcValue;
+
+    let dest = destValue instanceof File ? destValue.path : destValue;
+    if (dest.endsWith('/')) dest += basename(src);
+
+    const messages = messageBuilder(src, dest);
+
+    logger.default(`️☁️  SCP with server ${this.name}`);
     logger.addIndentation();
+    logger.default(`🙏 ${messages.initial}`);
 
-    const result: any = await new Promise(resolve => {
-      this.sshClient.exec(command, function(err, stream) {
-        if (err) throw err;
-        stream
-          .on('close', function(code, signal) {
-            console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-            resolve({});
-          })
-          .on('data', function(data) {
-            console.log('STDOUT: ' + data);
-          })
-          .stderr.on('data', function(data) {
-            console.log('STDERR: ' + data);
-          });
-      });
-    });
+    const response = await exec(`scp ${src} ${dest}`);
+    if (response.success) logger.default('☀️  ' + messages.success);
 
     logger.removeIndentation();
-    return result;
+    return dest;
+  }
+
+  async download(remoteValue: File | string, localValue: File | string): Promise<File> {
+    const messageBuilder = (src, dest) => ({
+      initial: `Requesting to download file ${src}`,
+      success: `File downloaded to ${dest}`
+    });
+
+    const dest = await this.scp(`${this.sshSignature}:${remoteValue}`, localValue, messageBuilder);
+    return new File(dest);
+  }
+
+  async upload(localValue: File | string, remoteValue: File | string): Promise<RemoteFile> {
+    const messageBuilder = (src, dest) => ({
+      initial: `Requesting to upload file ${src}`,
+      success: `File uploaded to ${dest}`
+    });
+
+    const dest = await this.scp(localValue, `${this.sshSignature}:${remoteValue}`, messageBuilder);
+    return new RemoteFile(this, dest);
+  }
+
+  async exec(command: string): Promise<ExecResponse> {
+    logger.default(`️☁️  SSHing into server ${this.name}`);
+    logger.addIndentation();
+
+    const response = await exec(`ssh ${this.sshSignature} "${command}"`);
+    if (response.success) logger.default('☀️  SSH command complete succesfully');
+
+    logger.removeIndentation();
+    return response;
   }
 
   /*
@@ -127,13 +119,6 @@ export default class Remote {
     return this.files[0] || RemoteFile;
   }
 
-  async saveFile(file: File, path: string): Promise<File> {
-    if (path.endsWith('/')) path += file.filename;
-
-    await RemoteFile.saveBinary(file.path, path);
-    return new RemoteFile(this, path);
-  }
-
   /*
    * Config local
    */
@@ -150,11 +135,11 @@ export default class Remote {
   configLocalSshHost() {
     const file = new File(`~/.ssh/config`);
     file.append([
-      `Host ${this.host}`,
+      `Host ${this.name}`,
       `  HostName ${this.ip}`,
       `  Port ${this.port}`,
       `  User ${this.username}`,
-      `  IdentityFile ~/.ssh/${this.host}`,
+      `  IdentityFile ~/.ssh/${this.name}`,
       ''
     ]);
 
@@ -166,6 +151,6 @@ export default class Remote {
    */
 
   logLabeledWarn(label: string, message: string) {
-    logger.labeledWarn(`Remote ${this.host}`, label, message);
+    logger.labeledWarn(`Remote ${this.ip}`, label, message);
   }
 }
