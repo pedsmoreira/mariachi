@@ -46,6 +46,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@babel/register": "^7.4.0",
     "@babel/runtime": "^7.4.2",
+    "@types/ssh2": "^0.5.38",
     "babel-plugin-module-resolver": "^3.2.0",
     "battle-casex": "^1.0.0",
     "casex": "^3.0.0",
@@ -57,6 +58,7 @@
     "isbinaryfile": "^4.0.0",
     "rimraf": "^2.6.3",
     "semver": "^6.0.0",
+    "ssh2": "^0.8.2",
     "tmp": "^0.1.0"
   },
   "devDependencies": {

@@ -1,23 +1,30 @@
+import Remote from '../Remote';
+import File from './File';
+
 export default class RemoteFile extends File {
   remote: Remote;
 
   _tmpFile: string;
 
-  constructor() {}
-
   static homedPath(path: string) {
     return path;
   }
 
-  static glob() {}
+  static read(path: string) {
+    return '';
+  }
 
-  static read() {}
+  static saveBinary(src: string, dest: string) {}
 
-  static delete() {}
+  static saveText(path: string, text: string) {}
 
-  static chmod() {}
+  static delete(path: string) {}
 
-  saveAs() {}
+  static chmod(path: string) {}
 
-  saveLocal(): File {}
+  saveLocal(path: string): File {
+    // scp
+    // @ts-ignore
+    return null;
+  }
 }

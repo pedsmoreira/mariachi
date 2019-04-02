@@ -74,12 +74,12 @@ export default class Strategy {
   }
 
   get loaded() {
-    this.logWarn('Loaded', 'Method not implemented - returning false');
+    this.logLabeledWarn('Loaded', 'Method not implemented - returning false');
     return false;
   }
 
   onLoad() {
-    this.logWarn('OnLoad', 'Method not implemented');
+    this.logLabeledWarn('OnLoad', 'Method not implemented');
   }
 
   /*
@@ -108,15 +108,15 @@ export default class Strategy {
       logger.addIndentation();
     }
 
-    if (!this.loaded) {
+    if (this.loaded) {
+      logger.success(`🗃  ${this.name} was already loaded`);
+    } else {
       const response: any = this.onLoad();
       if (response) await response;
 
       if (!options.silent) {
         logger.success(`🚚 ${this.name} loaded`);
       }
-    } else {
-      logger.success(`🗃  ${this.name} was already loaded`);
     }
 
     if (!options.silent) logger.removeIndentation();
@@ -137,7 +137,7 @@ export default class Strategy {
     if (this.options[name] !== undefined) return this.options[name];
 
     const option = this.currentCommand.option(name);
-    if (!option) return this.logWarn('Ask Option', `Option "${name}" not found`);
+    if (!option) return this.logLabeledWarn('Ask Option', `Option "${name}" not found`);
 
     const type = option.noArgs ? 'toggle' : 'input';
     const response = await this.ask(options.message || `${name}: `, { type, ...options });
@@ -178,11 +178,15 @@ export default class Strategy {
    * File Helpers
    */
 
+  ensureDir(path: string, name?: string | null) {
+    File.ensureDir(battleCasex(path, name));
+  }
+
   file(pattern: string, name?: string | null, globOptions?: Object): File {
     const files = this.files(pattern, name, globOptions);
     if (!files.length) {
       const path = battleCasex(pattern, name);
-      this.logWarn('File not found', `A new File instance was created for path "${path}"`);
+      this.logLabeledWarn('File not found', `A new File instance was created for path "${path}"`);
       return new File(path);
     }
 
@@ -269,11 +273,20 @@ export default class Strategy {
    */
 
   async exec(command: string, options: ExecOptions = {}): Promise<ExecResponse> {
-    logger.action(`🏃 Exec command: ${command}`);
-    logger.addIndentation();
+    let logMessage = `🏃 Exec command: \`${command}\``;
 
-    if (options.privateKey) command = `ssh-agent $(ssh-add ${options.privateKey}; ${command})`;
-    if (options.path) command = `cd ${options.path}; ${command}`;
+    if (options.privateKey) {
+      logMessage += ` with private key "${basename(options.privateKey)}"`;
+      command = `ssh-agent $(ssh-add ${options.privateKey}; ${command})`;
+    }
+
+    if (options.path) {
+      logMessage += ` in path "${options.path}"`;
+      command = `cd ${options.path}; ${command}`;
+    }
+
+    logger.action(logMessage);
+    logger.addIndentation();
 
     const result: any = await new Promise(resolve => {
       const childProcess = exec(command);
@@ -323,14 +336,14 @@ export default class Strategy {
    */
 
   logRegistrationWarnings() {
-    if (!this.commands.length) return this.logWarn('Empty', 'No methods in config');
+    if (!this.commands.length) return this.logLabeledWarn('Empty', 'No methods in config');
 
     if (!this.compatibility) {
-      return this.logWarn('Compability check skipped', `No compabitility provided`);
+      return this.logLabeledWarn('Compability check skipped', `No compabitility provided`);
     }
 
     if (!this.compatible) {
-      return this.logWarn(
+      return this.logLabeledWarn(
         'Incompatible',
         `Expected '${this.compatibility.toString()}' but the installed battlecry version is: '${
           this.battlecry.version
@@ -343,12 +356,8 @@ export default class Strategy {
     logger[method](message);
   }
 
-  logWarn(label: string, message: string) {
-    logger.warn(`[${label}] ${this.basename}`);
-    logger.addIndentation();
-    logger.default(message);
-    logger.removeIndentation();
-    logger.emptyLine();
+  logLabeledWarn(label: string, message: string) {
+    logger.labeledWarn(this.basename, label, message);
   }
 
   throwMethodNotImplemented(method: string): void {

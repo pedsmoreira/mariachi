@@ -12,7 +12,7 @@ import glob from './glob';
 
 import Line from './Line';
 import LineCollection, { LineCollectionType } from './LineCollection';
-import Remote from './Remote';
+import Remote from '../Remote';
 import RemoteFile from './RemoteFile';
 
 const LINE_BREAK = /\r?\n/;
@@ -51,6 +51,10 @@ export default class File {
     return files;
   }
 
+  static ensureDir(path: string) {
+    if (!this.exists(path)) mkdirp.sync(path);
+  }
+
   static exists(path: string) {
     return fs.existsSync(path);
   }
@@ -59,8 +63,16 @@ export default class File {
     return isBinaryFileSync(path);
   }
 
-  static read(path: string) {
+  static read(path: string): string {
     return fs.readFileSync(path, 'utf8');
+  }
+
+  static saveBinary(src: string, dest: string) {
+    fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+  }
+
+  static saveText(path: string, text: string) {
+    fs.writeFileSync(path, text);
   }
 
   static delete(path: string) {
@@ -78,11 +90,11 @@ export default class File {
    */
 
   get binary(): boolean {
-    return this.exists && (this.constructor as any).binary(this.path);
+    return this.exists && this.self.binary(this.path);
   }
 
   get exists(): boolean {
-    return (this.constructor as any).exists(this.path);
+    return this.self.exists(this.path);
   }
 
   get name(): string {
@@ -124,16 +136,16 @@ export default class File {
     path = this.self.homedPath(battleCasex(path, name));
 
     const creating = !this.self.exists(path);
-    mkdirp.sync(dirname(path));
+    this.self.createDir(dirname(path));
 
     if (this.binary) {
-      fs.createReadStream(this.path).pipe(fs.createWriteStream(path));
+      this.self.saveBinary(this.path);
     } else {
-      fs.writeFileSync(path, battleCasex(this.text, name));
+      this.self.saveText(this.path, battleCasex(this.text, name));
     }
 
-    if (creating) logger.success(`✅ File created: ${path}`);
-    else logger.success(`☑️ File updated: ${path}`);
+    if (creating) logger.success(`✅ ${this.self.name} created: ${path}`);
+    else logger.success(`☑️ ${this.self.name} updated: ${path}`);
 
     return new File(path);
   }
@@ -160,11 +172,12 @@ export default class File {
 
   delete(): void {
     this.self.delete(this.path);
-    logger.success(`🔥 File deleted: ${this.path}`);
+    logger.success(`🔥 ${this.self.name} deleted: ${this.path}`);
   }
 
   chmod(mode: number): this {
     this.self.chmod(this.path, mode);
+    logger.success(`🔒 ${this.self.name} permission changed to ${mode}: ${this.path}`);
     return this;
   }
 
@@ -197,7 +210,7 @@ export default class File {
   }
 
   get lines(): LineCollectionType {
-    if (this.binary) throw new Error('Attempting to treat binary file as text');
+    if (this.binary) throw new Error(`Attempting to treat binary ${this.self.name} as text`);
 
     if (!this._lines) this.read();
     return this._lines;
@@ -209,7 +222,7 @@ export default class File {
     this.add(0, texts);
   }
 
-  get stub() {
+  get searchStub() {
     const fn = function() {
       return this.stub;
     };
@@ -218,7 +231,7 @@ export default class File {
 
     return new Proxy(fn, {
       get: () => {
-        return this.stub;
+        return this.searchStub;
       }
     });
   }
@@ -228,7 +241,7 @@ export default class File {
     if (name) warning += ` with name ${name}`;
     logger.warn(warning);
 
-    return this.stub;
+    return this.searchStub;
   }
 
   find(search: string, name?: string): Line {

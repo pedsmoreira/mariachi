@@ -45,6 +45,14 @@ class Log {
     this.log(chalk, `⚠️  ${message}`);
   }
 
+  labeledWarn(file: string, label: string, message: string) {
+    this.warn(`[${label}] ${file}`);
+    this.addIndentation();
+    this.default(message);
+    this.removeIndentation();
+    this.emptyLine();
+  }
+
   error(message: string) {
     this.log(chalk.red, message);
   }
