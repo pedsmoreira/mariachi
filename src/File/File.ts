@@ -104,11 +104,17 @@ export default class File {
     return this.self.exists(this.path);
   }
 
+  /**
+   * @description File name without extension
+   */
   get name(): string {
     const ext = this.extension;
     return this.filename.substring(0, this.filename.length - ext.length);
   }
 
+  /**
+   * @description File name with extension
+   */
   get filename(): string {
     return basename(this.path);
   }
@@ -222,10 +228,10 @@ export default class File {
     return this._lines;
   }
 
-  setLines(texts: string[]) {
+  setLines(...texts: any) {
     // @ts-ignore
     this._lines = new LineCollection();
-    this.add(0, texts);
+    this.add(0, ...texts);
   }
 
   get searchStub() {
@@ -256,6 +262,10 @@ export default class File {
 
   first(search: string, name?: string): Line {
     return this.find(search, name);
+  }
+
+  includes(search: string, name?: string): boolean {
+    return this.all(search, name, { limit: 1 }).length > 0;
   }
 
   replace(search: string, replacement: string): this {
@@ -293,8 +303,8 @@ export default class File {
     return this.find(search).untilLast(search);
   }
 
-  add(index: number, items: any): LineCollectionType {
-    if (!Array.isArray(items)) items = [items];
+  add(index: number, ...items: any): LineCollectionType {
+    if (Array.isArray(items[0])) items = items[0];
 
     const collection: any = new LineCollection();
     collection.push(...items.map(item => (item instanceof Line ? item : new Line(this, item))));
@@ -303,12 +313,12 @@ export default class File {
     return collection;
   }
 
-  prepend(items: any): LineCollectionType {
-    return this.add(0, items);
+  prepend(...items: any): LineCollectionType {
+    return this.add(0, ...items);
   }
 
-  append(items: any): LineCollectionType {
-    return this.add(this.lines.length, items);
+  append(...items: any): LineCollectionType {
+    return this.add(this.lines.length, ...items);
   }
 
   remove(line: number | Line) {

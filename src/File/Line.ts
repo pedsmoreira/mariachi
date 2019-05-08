@@ -23,6 +23,10 @@ export default class Line {
     return this;
   }
 
+  get empty() {
+    return !this.text;
+  }
+
   replace(search: string | RegExp, text: string, name?: string): this {
     text = battleCasex(text, name);
     this.text = this.text.replace(search, text);
