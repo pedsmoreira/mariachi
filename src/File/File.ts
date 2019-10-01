@@ -14,6 +14,8 @@ import glob from './glob';
 import Line from './Line';
 import LineCollection, { LineCollectionType } from './LineCollection';
 
+import FileCollection from './FileCollection';
+
 const LINE_BREAK = /\r?\n/;
 
 export default class File {
@@ -43,7 +45,7 @@ export default class File {
   }
 
   static glob(pattern: string, name?: string | null, options?: Object): File[] {
-    const files = [];
+    const files: File[] = [];
 
     const casexPath = this.path(pattern, name);
     glob(casexPath, options).forEach(path => {
@@ -51,7 +53,8 @@ export default class File {
       if (!isDirectory) files.push(new File(path));
     });
 
-    return files;
+    // @ts-ignore
+    return new FileCollection(...files);
   }
 
   static ensureDir(path: string) {

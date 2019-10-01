@@ -4,7 +4,7 @@ import battleCasex from 'battle-casex';
 import semver from 'semver';
 import { prompt } from 'enquirer';
 
-import File from './File';
+import File, { FileCollection } from './File';
 import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
 
@@ -180,7 +180,7 @@ export default class Strategy {
     return files[0];
   }
 
-  files(pattern: string, name?: string | null, globOptions?: Object): File[] {
+  files(pattern: string, name?: string | null, globOptions?: Object): FileCollection {
     return File.glob(pattern, name, globOptions);
   }
 
@@ -198,7 +198,7 @@ export default class Strategy {
     return join(dirname(this.path), 'templates');
   }
 
-  templates(pattern?: string, globOptions?: Object): File[] {
+  templates(pattern?: string, globOptions?: Object): FileCollection {
     const values = [this.templatesPath, '**'];
     if (pattern) values.push(pattern);
 
