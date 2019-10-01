@@ -3,7 +3,7 @@ import { Strategy, command } from 'battlecry';
 export default class StrategyStrategy extends Strategy {
   compatibility = '1.x';
 
-  get folder(): string {
+  get folder() {
     return `battlecry/strategies/${this.args.name}/`;
   }
 

@@ -165,9 +165,16 @@ describe('File', () => {
       const path = `${tmpPath}/binary-__na-me__`;
       const realPath = `${tmpPath}/binary-saved-as`;
 
-      const file = new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
-      expect(file.path).toEqual(realPath);
-      // expect(new File(realPath).exists).toBeTruthy();
+      new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
+      expect(new File(realPath).exists).toBeTruthy();
+    });
+
+    it('appends the filename if the given path ends with /', () => {
+      const path = `${tmpPath}/binary-folder-__na-me__/`;
+      const realPath = `${tmpPath}/binary-folder-saved-as/binary`;
+
+      new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
+      expect(new File(realPath).exists).toBeTruthy();
     });
   });
 

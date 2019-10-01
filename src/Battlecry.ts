@@ -47,8 +47,8 @@ export default class Battlecry {
     this.loadStrategies(`${path}/strategies/*`);
   }
 
-  loadStrategies(path: string) {
-    glob(`${path}/**/*.strategy.{js,ts}`).forEach(path => {
+  loadStrategies(basePath: string) {
+    glob(`${basePath}/*.strategy.{js,ts}`).forEach(path => {
       const strategyClass = require(path).default;
       const name = basename(path.split('.strategy.')[0]);
 

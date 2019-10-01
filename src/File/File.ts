@@ -34,9 +34,12 @@ export default class File {
     if (!path) path = '';
 
     if (path.startsWith('~')) path = homedir + path.substring(1);
-    if (name && path.endsWith('/')) path += name;
+    return name ? battleCasex(path, name) : path;
+  }
 
-    return battleCasex(path, name);
+  static slashedPath(path: string, name: string) {
+    if (name && path.endsWith('/')) path += name;
+    return path;
   }
 
   static glob(pattern: string, name?: string | null, options?: Object): File[] {
@@ -136,7 +139,8 @@ export default class File {
   }
 
   saveAs(path: string, name?: string | null): File {
-    const normalizedPath = this.self.path(path, name);
+    const slashedPath = this.self.slashedPath(path, this.filename);
+    const normalizedPath = this.self.path(slashedPath, name);
 
     const creating = !this.self.exists(normalizedPath);
     this.self.ensureDir(dirname(normalizedPath));
