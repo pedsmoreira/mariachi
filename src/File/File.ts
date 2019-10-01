@@ -23,24 +23,26 @@ export default class File {
   _lines: LineCollectionType;
 
   constructor(path: string, name?: string) {
-    this.path = battleCasex(this.self.normalizePath(path), name);
+    this.path = this.self.path(path, name);
   }
 
   static get tmp() {
     return new File(tmp.tmpNameSync());
   }
 
-  static normalizePath(path: string, name?: string) {
+  static path(path: string, name?: string) {
+    if (!path) path = '';
+
     if (path.startsWith('~')) path = homedir + path.substring(1);
     if (name && path.endsWith('/')) path += name;
 
-    return path;
+    return battleCasex(path, name);
   }
 
   static glob(pattern: string, name?: string | null, options?: Object): File[] {
     const files = [];
 
-    const casexPath = battleCasex(this.normalizePath(pattern), name);
+    const casexPath = this.path(pattern, name);
     glob(casexPath, options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
@@ -65,8 +67,8 @@ export default class File {
     return fs.readFileSync(path, 'utf8');
   }
 
-  static saveBinary(src: string, dest: string) {
-    fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+  static copyBinary(src: string, dest: string) {
+    fs.copyFileSync(src, dest);
   }
 
   static saveText(path: string, text: string) {
@@ -134,13 +136,13 @@ export default class File {
   }
 
   saveAs(path: string, name?: string | null): File {
-    const normalizedPath = this.self.normalizePath(path, name);
+    const normalizedPath = this.self.path(path, name);
 
     const creating = !this.self.exists(normalizedPath);
     this.self.ensureDir(dirname(normalizedPath));
 
     if (this.binary) {
-      this.self.saveBinary(normalizedPath);
+      this.self.copyBinary(this.path, normalizedPath);
     } else {
       this.self.saveText(normalizedPath, battleCasex(this.text, name));
     }
@@ -152,12 +154,12 @@ export default class File {
   }
 
   useTemplateIfEmpty(path: string, name?: string): File {
-    if (!this.empty) return;
+    if (this.empty) {
+      const file = new File(path, name);
+      this.text = file.text;
+    }
 
-    const file = new File(path, name);
-    if (!file.exists) file.text = this.text;
-
-    return file;
+    return this;
   }
 
   move(path: string, name?: string | null): this {
@@ -221,10 +223,16 @@ export default class File {
     return this._lines;
   }
 
-  setLines(...texts: any) {
+  setLines(...texts: any): this {
     // @ts-ignore
     this._lines = new LineCollection();
     this.add(0, ...texts);
+
+    return this;
+  }
+
+  set lineTexts(texts) {
+    this.setLines(texts);
   }
 
   get searchStub() {

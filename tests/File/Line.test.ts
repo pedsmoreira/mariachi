@@ -5,7 +5,7 @@ describe('Line', () => {
 
   beforeEach(() => {
     textFile = new File('');
-    textFile.lines = ['a', 'b', 'c', 'a'];
+    textFile.lineTexts = ['a', 'b', 'c', 'a'];
   });
 
   describe('#index', () => {
@@ -83,7 +83,7 @@ describe('Line', () => {
 
   describe('#untilLast', () => {
     beforeEach(() => {
-      textFile.lines = ['a', 'a', 'b', 'a'];
+      textFile.lineTexts = ['a', 'a', 'b', 'a'];
     });
 
     describe('given a string', () => {
@@ -103,7 +103,7 @@ describe('Line', () => {
 
   describe('#untilEnclosing', () => {
     it('returns a collection taking into account indendation', () => {
-      textFile.lines = ['a', 'function foo() {', '  bar();', '  baar();', '}', 'b'];
+      textFile.lineTexts = ['a', 'function foo() {', '  bar();', '  baar();', '}', 'b'];
 
       const lines = textFile.lines[1].untilEnclosing;
       expect(lines.textArray).toEqual(['function foo() {', '  bar();', '  baar();', '}']);

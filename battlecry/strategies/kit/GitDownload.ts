@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import tmp from 'tmp';
 import downloadGitRepo from 'download-git-repo';
 import { join } from 'path';
 
@@ -14,7 +13,7 @@ export default class GitDownload {
   constructor(repository: string, dir: string | null) {
     this.repository = repository;
     this.dir = dir;
-    this.tmpPath = tmp.tmpNameSync();
+    this.tmpPath = File.tmp.tmpNameSync();
   }
 
   async handle() {

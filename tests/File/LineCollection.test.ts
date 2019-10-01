@@ -6,7 +6,7 @@ describe('LineCollection', () => {
 
   beforeEach(() => {
     file = new File();
-    file.lines = ['a', 'b', 'c'];
+    file.lineTexts = ['a', 'b', 'c'];
 
     collection = new LineCollection(...file.lines);
   });
@@ -38,14 +38,14 @@ describe('LineCollection', () => {
 
   describe('#add', () => {
     it('adds response from function to lines sorted by index', () => {
-      collection.add(() => file.add(1, 'foo'));
+      collection.add(file.add(1, 'foo'));
       expect(collection.textArray).toEqual(['a', 'foo', 'b', 'c']);
     });
   });
 
   describe('#sort', () => {
     it('sorts the lines and updates their index on the file', () => {
-      collection.add(() => file.prepend('d')).sort();
+      collection.add(file.prepend('d')).sort();
       expect(file.textArray).toEqual(['a', 'b', 'c', 'd']);
     });
   });

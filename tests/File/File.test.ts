@@ -1,7 +1,7 @@
 import { File, Line, LineCollection } from 'battlecry';
 import rimraf from 'rimraf';
 import { EOL } from 'os';
-import fs from 'fs';
+import * as fs from 'fs';
 
 const tmpPath = `${__dirname}/File-tmp`;
 const fixturesPath = `${__dirname}/../fixtures`;
@@ -11,32 +11,16 @@ describe('File', () => {
 
   beforeEach(() => {
     textFile = new File('');
-    textFile.lines = ['a', 'b', 'c', 'a'];
+    textFile.setLines(['a', 'b', 'c', 'a']);
   });
 
   afterAll(() => {
     rimraf.sync(tmpPath);
   });
 
-  describe('#existing', () => {
-    const file = new File(`${fixturesPath}/a.txt`);
+  describe('.tmp', () => {});
 
-    describe('when the file exists', () => {
-      it('returns the file at the given path with its contents', () => {
-        const existingFile = file.existing(`${fixturesPath}/b.txt`);
-        expect(existingFile.path).toEqual(`${fixturesPath}/b.txt`);
-        expect(existingFile.text).toEqual('content on file b');
-      });
-    });
-
-    describe('when the file does not exist', () => {
-      it('returns a file at the requested path and current contents (template)', () => {
-        const existingFile = file.existing(`${fixturesPath}/new-file`);
-        expect(existingFile.path).toEqual(`${fixturesPath}/new-file`);
-        expect(existingFile.text).toEqual('content on file a');
-      });
-    });
-  });
+  describe('.normalizePath', () => {});
 
   describe('.glob', () => {
     it('returns file paths', () => {
@@ -181,16 +165,25 @@ describe('File', () => {
       const path = `${tmpPath}/binary-__na-me__`;
       const realPath = `${tmpPath}/binary-saved-as`;
 
-      new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
-      expect(new File(realPath).exists).toBeTruthy();
+      const file = new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
+      expect(file.path).toEqual(realPath);
+      // expect(new File(realPath).exists).toBeTruthy();
+    });
+  });
+
+  describe('#useTemplateIfEmpty', () => {
+    describe('when the file exists', () => {
+      it('returns the file at the given path with its contents', () => {
+        const file = new File(`${fixturesPath}/a.txt`).useTemplateIfEmpty(`${fixturesPath}/b.txt`);
+        expect(file.text).toEqual('content on file a');
+      });
     });
 
-    it('appends the filename if the given path ends with /', () => {
-      const path = `${tmpPath}/binary-folder-__na-me__/`;
-      const realPath = `${tmpPath}/binary-folder-saved-as/binary`;
-
-      new File(`${fixturesPath}/binary`).saveAs(path, 'saved-as');
-      expect(new File(realPath).exists).toBeTruthy();
+    describe('when the file does not exist', () => {
+      it('returns a file at the requested path and current contents (template)', () => {
+        const file = new File(`${tmpPath}/new-file`).useTemplateIfEmpty(`${fixturesPath}/b.txt`);
+        expect(file.text).toEqual('content on file b');
+      });
     });
   });
 
@@ -250,7 +243,7 @@ describe('File', () => {
 
     it('returns existing text', () => {
       const file = new File();
-      file.lines = ['first', 'second'];
+      file.lineTexts = ['first', 'second'];
       expect(file.text).toEqual(`first${EOL}second`);
     });
   });
@@ -279,7 +272,7 @@ describe('File', () => {
 
   describe('#lines', () => {
     it('returns lines', () => {
-      textFile.lines = ['one', 'two'];
+      textFile.lineTexts = ['one', 'two'];
       expect(textFile.textArray).toEqual(['one', 'two']);
     });
 
@@ -327,7 +320,7 @@ describe('File', () => {
 
   describe('#consecutive', () => {
     it('returns all matching lines', () => {
-      textFile.lines = ['start', 'import a', 'import b', 'import c', 'end'];
+      textFile.lineTexts = ['start', 'import a', 'import b', 'import c', 'end'];
       expect(textFile.consecutive('import ').textArray).toEqual(['import a', 'import b', 'import c']);
     });
   });

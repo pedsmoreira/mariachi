@@ -34,9 +34,7 @@ export default class LineCollection {
     return this._proxy;
   }
 
-  add(value: Line | LineCollection | Function) {
-    if (typeof value === 'function') value = value(this);
-
+  add(value: Line | LineCollection) {
     if (value instanceof Line) this.lines.push(value);
     else this.lines.push(...(value as any).lines);
 
