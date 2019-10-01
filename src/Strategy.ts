@@ -7,7 +7,6 @@ import { prompt } from 'enquirer';
 import File from './File';
 import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
-import Remote from './Remote';
 
 import { dd, exec, ExecOptions, logger } from './helpers';
 
@@ -208,14 +207,6 @@ export default class Strategy {
 
   template(pattern?: string, globOptions?: Object): File {
     return this.templates(pattern, globOptions)[0];
-  }
-
-  /*
-   * Remote helpers
-   */
-
-  remote(config: any): any {
-    return new Remote(config);
   }
 
   /*
