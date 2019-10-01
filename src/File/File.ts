@@ -23,30 +23,25 @@ export default class File {
   _lines: LineCollectionType;
 
   constructor(path: string, name?: string) {
-    this.path = battleCasex(this.self.homedPath(path), name);
+    this.path = battleCasex(this.self.normalizePath(path), name);
   }
 
   static get tmp() {
     return new File(tmp.tmpNameSync());
   }
 
-  existing(path: string, name?: string): File {
-    if (path.endsWith('/')) path += this.filename;
+  static normalizePath(path: string, name?: string) {
+    if (path.startsWith('~')) path = homedir + path.substring(1);
+    if (name && path.endsWith('/')) path += name;
 
-    const file = new File(path, name);
-    if (!file.exists) file.text = this.text;
-
-    return file;
-  }
-
-  static homedPath(path: string) {
-    return path.startsWith('~') ? homedir + path.substring(1) : path;
+    return path;
   }
 
   static glob(pattern: string, name?: string | null, options?: Object): File[] {
     const files = [];
 
-    glob(battleCasex(this.homedPath(pattern), name), options).forEach(path => {
+    const casexPath = battleCasex(this.normalizePath(pattern), name);
+    glob(casexPath, options).forEach(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
       if (!isDirectory) files.push(new File(path));
     });
@@ -70,10 +65,6 @@ export default class File {
     return fs.readFileSync(path, 'utf8');
   }
 
-  static require(path: string): any {
-    return require(path);
-  }
-
   static saveBinary(src: string, dest: string) {
     fs.createReadStream(src).pipe(fs.createWriteStream(dest));
   }
@@ -89,8 +80,6 @@ export default class File {
   static chmod(path: string, mode: number) {
     fs.chmodSync(path, mode);
   }
-
-  static exec(path: string) {}
 
   /*
    * File management
@@ -145,22 +134,30 @@ export default class File {
   }
 
   saveAs(path: string, name?: string | null): File {
-    if (path.endsWith('/')) path += this.filename;
-    path = this.self.homedPath(battleCasex(path, name));
+    const normalizedPath = this.self.normalizePath(path, name);
 
-    const creating = !this.self.exists(path);
-    this.self.ensureDir(dirname(path));
+    const creating = !this.self.exists(normalizedPath);
+    this.self.ensureDir(dirname(normalizedPath));
 
     if (this.binary) {
-      this.self.saveBinary(path);
+      this.self.saveBinary(normalizedPath);
     } else {
-      this.self.saveText(path, battleCasex(this.text, name));
+      this.self.saveText(normalizedPath, battleCasex(this.text, name));
     }
 
-    if (creating) logger.success(`✅ ${this.self.name} created: ${path}`);
-    else logger.success(`☑️  ${this.self.name} updated: ${path}`);
+    if (creating) logger.success(`✅ ${this.self.name} created: ${normalizedPath}`);
+    else logger.success(`☑️  ${this.self.name} updated: ${normalizedPath}`);
 
-    return new File(path);
+    return new File(normalizedPath);
+  }
+
+  useTemplateIfEmpty(path: string, name?: string): File {
+    if (!this.empty) return;
+
+    const file = new File(path, name);
+    if (!file.exists) file.text = this.text;
+
+    return file;
   }
 
   move(path: string, name?: string | null): this {
@@ -189,20 +186,12 @@ export default class File {
     return this;
   }
 
-  exec(args?: string): this {
-    return this.self.exec(args);
-  }
-
   /*
    * Text helpers
    */
 
   read() {
     this.text = this.exists ? this.self.read(this.path) : '';
-  }
-
-  require() {
-    return this.self.require(this.absolutePath);
   }
 
   get text(): string {
@@ -215,6 +204,10 @@ export default class File {
 
   set text(text: string) {
     this.setLines(text.split(LINE_BREAK));
+  }
+
+  get empty() {
+    return !this.text;
   }
 
   line(index: number): Line {
