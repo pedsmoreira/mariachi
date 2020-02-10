@@ -1,7 +1,11 @@
 import File from './File';
 import withMethodMissing from './withMethodMissing';
+import { logger } from '../helpers';
 
-export type FileCollectionType = File & Array<File> & FileCollection;
+// @ts-ignore
+export interface FileCollectionType extends Array<File>, File, FileCollection {
+  files: File[];
+}
 
 @withMethodMissing
 export default class FileCollection {
@@ -46,5 +50,9 @@ export default class FileCollection {
     if (arrayProperty !== undefined && typeof arrayProperty !== 'function') return arrayProperty;
 
     return !isNumber ? defaultFn : this.files[name];
+  }
+
+  logPaths() {
+    return this.files.forEach(file => logger.default(file.path));
   }
 }

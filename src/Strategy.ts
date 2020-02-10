@@ -2,9 +2,9 @@ import { join, basename, dirname } from 'path';
 import rimraf from 'rimraf';
 import battleCasex from 'battle-casex';
 import semver from 'semver';
-import { prompt } from 'enquirer';
 
-import File, { FileCollection } from './File';
+import File from './File';
+import { FileCollectionType } from './File/FileCollection';
 import Battlecry from './Battlecry';
 import Command, { CommandConfig } from './Command';
 
@@ -12,10 +12,6 @@ import { dd, exec, ExecOptions, logger } from './helpers';
 
 type Args = { [name: string]: string | string[] };
 type Options = { [name: string]: string };
-
-type AskOptions = {
-  [key: string]: any;
-};
 
 export default class Strategy {
   options: Options;
@@ -58,79 +54,6 @@ export default class Strategy {
 
   get compatible() {
     return semver.satisfies(this.battlecry.version, this.compatibility);
-  }
-
-  get loaded() {
-    this.logLabeledWarn('Loaded', 'Method not implemented - returning false');
-    return false;
-  }
-
-  onLoad() {
-    this.logLabeledWarn('OnLoad', 'Method not implemented');
-  }
-
-  /*
-   * Actions
-   */
-
-  async require(...strategyNames: string[]) {
-    const strategies = this.strategies(...strategyNames);
-    const responses = [];
-
-    for (let i = 0; i < strategies.length; i++) {
-      const strategy = strategies[i];
-
-      let response: any = strategy.load();
-      if (response) response = await response;
-
-      responses.push(response);
-    }
-
-    return responses;
-  }
-
-  async load(options: any = {}) {
-    if (!options.silent) {
-      logger.default(`📦 Loading strategy ${this.name}`);
-      logger.addIndentation();
-    }
-
-    if (this.loaded) {
-      logger.success(`🗃  ${this.name} was already loaded`);
-    } else {
-      const response: any = this.onLoad();
-      if (response) await response;
-
-      if (!options.silent) {
-        logger.success(`🚚 ${this.name} loaded`);
-      }
-    }
-
-    if (!options.silent) logger.removeIndentation();
-  }
-
-  async ask(question: string, options: AskOptions = {}) {
-    const response = await prompt({
-      type: 'input',
-      ...options,
-      name: 'question',
-      message: logger.spaces + question
-    });
-
-    return response['question'];
-  }
-
-  async askOption(name: string, options: AskOptions = {}) {
-    if (this.options[name] !== undefined) return this.options[name];
-
-    const option = this.currentCommand.option(name);
-    if (!option) return this.logLabeledWarn('Ask Option', `Option "${name}" not found`);
-
-    const type = option.noArgs ? 'toggle' : 'input';
-    const response = await this.ask(options.message || `${name}: `, { type, ...options });
-    this.options[name] = response;
-
-    return response;
   }
 
   async play(methodName: string): Promise<any> {
@@ -180,7 +103,7 @@ export default class Strategy {
     return files[0];
   }
 
-  files(pattern: string, name?: string | null, globOptions?: Object): FileCollection {
+  files(pattern: string, name?: string | null, globOptions?: Object): FileCollectionType {
     return File.glob(pattern, name, globOptions);
   }
 
@@ -198,7 +121,7 @@ export default class Strategy {
     return join(dirname(this.path), 'templates');
   }
 
-  templates(pattern?: string, globOptions?: Object): FileCollection {
+  templates(pattern?: string, globOptions?: Object): FileCollectionType {
     const values = [this.templatesPath, '**'];
     if (pattern) values.push(pattern);
 

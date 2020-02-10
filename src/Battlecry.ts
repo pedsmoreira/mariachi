@@ -81,7 +81,8 @@ export default class Battlecry {
 
   strategy(name: string): Strategy {
     // @ts-ignore
-    return this.createStrategy(name, this.strategies[name].path, this.strategies[name].constructor);
+    const constructor = this.strategies[name].constructor;
+    return this.createStrategy(name, this.strategies[name].path, constructor);
   }
 
   createStrategy(name: string, path: string, StrategyClass: typeof Strategy): Strategy {

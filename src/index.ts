@@ -1,3 +1,5 @@
+import './utils';
+
 export { default as casex } from 'casex';
 export { default as battleCasex } from 'battle-casex';
 

@@ -5,16 +5,14 @@ import { EOL } from 'os';
 import { isBinaryFileSync } from 'isbinaryfile';
 import battleCasex from 'battle-casex';
 import tmp from 'tmp';
-const homedir = require('os').homedir();
 
 import { logger } from '../helpers';
-
-import glob from './glob';
 
 import Line from './Line';
 import LineCollection, { LineCollectionType } from './LineCollection';
 
-import FileCollection from './FileCollection';
+import FileCollection, { FileCollectionType } from './FileCollection';
+import Path from './Path';
 
 const LINE_BREAK = /\r?\n/;
 
@@ -32,29 +30,18 @@ export default class File {
     return new File(tmp.tmpNameSync());
   }
 
-  static path(path: string, name?: string) {
-    if (!path) path = '';
-
-    if (path.startsWith('~')) path = homedir + path.substring(1);
-    return name ? battleCasex(path, name) : path;
-  }
-
   static slashedPath(path: string, name: string) {
     if (name && path.endsWith('/')) path += name;
     return path;
   }
 
-  static glob(pattern: string, name?: string | null, options?: Object): File[] {
-    const files: File[] = [];
-
-    const casexPath = this.path(pattern, name);
-    glob(casexPath, options).forEach(path => {
+  static glob(pattern: string, name?: string | null, options?: Object): FileCollectionType {
+    const files = Path.glob(pattern, name, options).filteredMap(path => {
       const isDirectory = fs.lstatSync(path).isDirectory();
-      if (!isDirectory) files.push(new File(path));
+      return isDirectory && new File(path);
     });
 
-    // @ts-ignore
-    return new FileCollection(...files);
+    return new FileCollection(...files) as FileCollectionType;
   }
 
   static ensureDir(path: string) {
